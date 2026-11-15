@@ -1,0 +1,124 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="RCForb.Gui.App"
+             RequestedThemeVariant="Dark">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="#0E0F12" />
+          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#181A1F" />
+          <SolidColorBrush x:Key="PanelBorderBrush" Color="#2C2F37" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#A879F0" />
+          <SolidColorBrush x:Key="TextPrimaryBrush" Color="#E4E6EA" />
+          <SolidColorBrush x:Key="TextSecondaryBrush" Color="#9AA0AA" />
+          <SolidColorBrush x:Key="ErrorBrush" Color="#D93A30" />
+          <SolidColorBrush x:Key="WarningBrush" Color="#E5B45C" />
+          <SolidColorBrush x:Key="InfoBrush" Color="#5AA9E6" />
+          <SolidColorBrush x:Key="SuccessBrush" Color="#3FCF8E" />
+          <SolidColorBrush x:Key="TextOnAccentBrush" Color="#0E0F12" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="#F2F3F7" />
+          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="PanelBorderBrush" Color="#D9DDE3" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#7C3AED" />
+          <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1B1E22" />
+          <SolidColorBrush x:Key="TextSecondaryBrush" Color="#5C636B" />
+          <SolidColorBrush x:Key="ErrorBrush" Color="#C92A2A" />
+          <SolidColorBrush x:Key="WarningBrush" Color="#8A6D00" />
+          <SolidColorBrush x:Key="InfoBrush" Color="#2B5CC9" />
+          <SolidColorBrush x:Key="SuccessBrush" Color="#2F8F4F" />
+          <SolidColorBrush x:Key="TextOnAccentBrush" Color="#FFFFFF" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+      <FontFamily x:Key="InterFontFamily">avares://Avalonia.Fonts.Inter/Assets#Inter</FontFamily>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+
+    <Style Selector="Window">
+      <Setter Property="FontFamily" Value="{DynamicResource InterFontFamily}" />
+      <Setter Property="Background" Value="{DynamicResource ConsoleBackgroundBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="Border.panel">
+      <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="12" />
+      <Setter Property="Margin" Value="8" />
+    </Style>
+
+    <Style Selector="TextBlock.h1">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Margin" Value="0,0,0,8" />
+    </Style>
+
+    <Style Selector="TextBlock.frequency">
+      <Setter Property="FontSize" Value="56" />
+      <Setter Property="FontWeight" Value="Light" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="FontFamily" Value="{DynamicResource InterFontFamily}" />
+    </Style>
+
+    <Style Selector="TextBlock.label">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="Margin" Value="0,8,0,2" />
+    </Style>
+
+    <Style Selector="TextBlock.value">
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Padding" Value="16,6" />
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="{DynamicResource PanelBorderBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+
+    <Style Selector="ProgressBar">
+      <Setter Property="Height" Value="8" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource PanelBorderBrush}" />
+    </Style>
+
+    <Style Selector="TextBox, ComboBox, NumericUpDown">
+      <Setter Property="Background" Value="{DynamicResource ConsoleBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+
+    <Style Selector="ListBox">
+      <Setter Property="Background" Value="{DynamicResource ConsoleBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+    </Style>
+
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="8,6" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+
+  </Application.Styles>
+</Application>

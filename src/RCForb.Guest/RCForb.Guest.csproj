@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>RCForb.Guest</RootNamespace>
+    <AssemblyName>rcforb-guest</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RCForb.Client\RCForb.Client.csproj" />
+    <ProjectReference Include="..\RCForb.Audio\RCForb.Audio.csproj" />
+  </ItemGroup>
+
+</Project>

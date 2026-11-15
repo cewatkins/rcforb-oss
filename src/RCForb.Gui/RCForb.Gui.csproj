@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>rcforb-gui</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropMode>none</BuiltInComInteropMode>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <!-- Optional custom controls that do not yet compile against Avalonia 12.1.4
+       (DrawArc/FormattedText.Draw/Polyline API differences). Excluded so they do
+       not block the application build; they are not referenced by any XAML. -->
+  <ItemGroup>
+    <Compile Remove="ArcMeter.cs" />
+    <Compile Remove="WaveformScope.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RCForb.Client\RCForb.Client.csproj" />
+    <ProjectReference Include="..\RCForb.Audio\RCForb.Audio.csproj" />
+  </ItemGroup>
+
+</Project>
