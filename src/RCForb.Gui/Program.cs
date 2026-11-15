@@ -1,6 +1,5 @@
 using System;
 using Avalonia;
-using Avalonia.Fonts.Inter;
 
 namespace RCForb.Gui;
 
@@ -13,6 +12,5 @@ internal static class Program
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .WithInterFont()
             .LogToTrace();
 }

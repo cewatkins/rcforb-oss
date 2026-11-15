@@ -7,6 +7,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Media;
 using Avalonia.Threading;
 using RCForb.Audio;
 using RCForb.Client.Audio;
@@ -101,6 +103,24 @@ public sealed class MainWindowViewModel : ObservableObject
     private long _decodeErrors;
     private long _controlLines;
     private string _audioError = "";
+
+    public enum TuningState { Off, Locked, Ok }
+
+    private TuningState _tuningState;
+    private string _tuningStatusText = "";
+    private IBrush? _tuningStatusBrush;
+
+    public string TuningStatusText
+    {
+        get => _tuningStatusText;
+        private set => SetProperty(ref _tuningStatusText, value);
+    }
+
+    public IBrush? TuningStatusBrush
+    {
+        get => _tuningStatusBrush;
+        private set => SetProperty(ref _tuningStatusBrush, value);
+    }
 
     public MainWindowViewModel()
     {
@@ -504,6 +524,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 _settings.ListenOnly = value;
                 SaveSettings();
                 OnPropertyChanged(nameof(ShowChannelControls));
+                UpdateTuningState();
             }
         }
     }
@@ -836,6 +857,7 @@ public sealed class MainWindowViewModel : ObservableObject
         Status = "connecting";
         TargetName = UseAuth ? $"{AuthUser}@{target.Display}" : target.Display;
         IsConnected = true;
+        UpdateTuningState();
         _connectedAt = DateTime.UtcNow;
         _totals = new GuestTotals();
         _cts = new CancellationTokenSource();
@@ -903,6 +925,7 @@ public sealed class MainWindowViewModel : ObservableObject
         _authSession = null;
         IsConnected = false;
         Status = "idle";
+        UpdateTuningState();
         _chatLines.Clear();
         _notices.Clear();
         _connectedUsers.Clear();
@@ -1029,6 +1052,80 @@ public sealed class MainWindowViewModel : ObservableObject
         _waveformSink?.Dispose();
         _waveformSink = null;
     }
+
+    private void UpdateTuningState()
+    {
+        TuningState level;
+        string text;
+        if (_authSession is null)
+        {
+            level = TuningState.Locked;
+            text = "TUNING LOCKED — not authenticated";
+        }
+        else if (ListenOnly)
+        {
+            level = TuningState.Locked;
+            text = "TUNING LOCKED — listen only";
+        }
+        else if (_authSession.AuthState != AuthState.Authorised)
+        {
+            level = TuningState.Locked;
+            text = "TUNING LOCKED — not authorised";
+        }
+        else if (_radioClosed)
+        {
+            level = TuningState.Locked;
+            text = "TUNING LOCKED — radio closed by remote";
+        }
+        else if (CanControlChannels)
+        {
+            level = TuningState.Ok;
+            text = "TUNING — ON";
+        }
+        else
+        {
+            level = TuningState.Locked;
+            text = "TUNING LOCKED";
+        }
+
+        _tuningState = level;
+        TuningStatusText = text;
+        TuningStatusBrush = level switch
+        {
+            TuningState.Ok => ThemeBrush("SuccessBrush"),
+            _ => ThemeBrush("ErrorBrush"),
+        } ?? ThemeBrush("TextSecondaryBrush") ?? new SolidColorBrush(Colors.Gray);
+    }
+
+    private static IBrush? ThemeBrush(string key)
+    {
+        try
+        {
+            var resources = Avalonia.Application.Current?.Resources;
+            if (resources is null)
+            {
+                return null;
+            }
+            return resources.TryGetResource(key, null, out var value)
+                ? value as IBrush
+                : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static void PlayTone(int hertz, int milliseconds)
+    {
+#pragma warning disable CA1416 // Console.Beep is Windows-only; silence is acceptable elsewhere.
+        try { Console.Beep(hertz, milliseconds); }
+#pragma warning restore CA1416
+        catch { /* Beep is unavailable on some hosts; silence is acceptable. */ }
+    }
+
+    private void PlayAck() => PlayTone(900, 80);
+    private void PlayReject() => PlayTone(260, 220);
 
     private void ResetState()
     {
@@ -1324,6 +1421,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 OnPropertyChanged(nameof(CanControlChannels));
                 OnPropertyChanged(nameof(CanSetFrequencyB));
                 OnPropertyChanged(nameof(ShowChannelControls));
+                UpdateTuningState();
             });
     }
 
@@ -1347,89 +1445,125 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public async Task SetFrequencyAAsync()
     {
-        if (_authSession is null)
+        if (_authSession is null || !CanControlChannels)
         {
+            PlayReject();
+            AddNotice("error", "Tuning is locked — authenticate and connect first.");
             return;
         }
 
         if (FrequencyAValue < 1m || FrequencyAValue > 10_000_000_000m)
         {
+            PlayReject();
             AddNotice("error", "Frequency must be within 1 Hz – 10 GHz (SPEC-STATE-016).");
             return;
         }
 
         var result = await _authSession.SetFrequencyAsync((long)FrequencyAValue);
-        if (!result.Sent)
+        if (result.Sent)
         {
-            AddNotice("error", $"Frequency write failed: {result.Error}");
+            PlayAck();
+            AddNotice("info", $"✓ VFO A set to {RadioStateStore.FormatHz(FrequencyAValue.ToString("0"))}");
+        }
+        else
+        {
+            PlayReject();
+            AddNotice("error", $"Set VFO A failed: {result.Error}");
         }
     }
 
     public async Task SetFrequencyBAsync()
     {
-        if (_authSession is null)
+        if (_authSession is null || !CanSetFrequencyB)
         {
-            return;
-        }
-
-        if (!HasFrequencyB)
-        {
-            AddNotice("error", "VFO B is not available on this radio.");
+            PlayReject();
+            AddNotice("error", "VFO B tuning is locked — authenticate and connect first.");
             return;
         }
 
         if (FrequencyBValue < 1m || FrequencyBValue > 10_000_000_000m)
         {
+            PlayReject();
             AddNotice("error", "Frequency must be within 1 Hz – 10 GHz (SPEC-STATE-016).");
             return;
         }
 
         var result = await _authSession.SetFrequencyBAsync((long)FrequencyBValue);
-        if (!result.Sent)
+        if (result.Sent)
         {
-            AddNotice("error", $"Frequency write failed: {result.Error}");
+            PlayAck();
+            AddNotice("info", $"✓ VFO B set to {RadioStateStore.FormatHz(FrequencyBValue.ToString("0"))}");
+        }
+        else
+        {
+            PlayReject();
+            AddNotice("error", $"Set VFO B failed: {result.Error}");
         }
     }
 
     public async Task SetBandAsync()
     {
-        if (_authSession is null)
+        if (_authSession is null || !CanControlChannels)
         {
+            PlayReject();
+            AddNotice("error", "Tuning is locked — authenticate and connect first.");
             return;
         }
 
         var result = await _authSession.SetBandAsync(BandText.Trim());
-        if (!result.Sent)
+        if (result.Sent)
         {
-            AddNotice("error", $"Band write failed: {result.Error}");
+            PlayAck();
+            AddNotice("info", $"✓ Band set to {BandText.Trim()}");
+        }
+        else
+        {
+            PlayReject();
+            AddNotice("error", $"Set band failed: {result.Error}");
         }
     }
 
     public async Task SetModeAsync()
     {
-        if (_authSession is null)
+        if (_authSession is null || !CanControlChannels)
         {
+            PlayReject();
+            AddNotice("error", "Tuning is locked — authenticate and connect first.");
             return;
         }
 
         var result = await _authSession.SetModeAsync(ModeText);
-        if (!result.Sent)
+        if (result.Sent)
         {
-            AddNotice("error", $"Mode write failed: {result.Error}");
+            PlayAck();
+            AddNotice("info", $"✓ Mode set to {ModeText}");
+        }
+        else
+        {
+            PlayReject();
+            AddNotice("error", $"Set mode failed: {result.Error}");
         }
     }
 
     public async Task SetFilterAsync()
     {
-        if (_authSession is null)
+        if (_authSession is null || !CanControlChannels)
         {
+            PlayReject();
+            AddNotice("error", "Tuning is locked — authenticate and connect first.");
             return;
         }
 
         var result = await _authSession.SetFilterAsync(FilterText);
-        if (!result.Sent)
+        if (result.Sent)
         {
-            AddNotice("error", $"Filter write failed: {result.Error}");
+            PlayAck();
+            AddNotice("info", $"✓ Filter set to {FilterText}");
+        }
+        else
+        {
+            PlayReject();
+            AddNotice("error", $"Set filter failed: {result.Error}");
         }
     }
 
@@ -1472,7 +1606,19 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         StateReady = true;
         Status = "live";
-        UpdateStateDisplay(state.Snapshot());
+        var snapshot = state.Snapshot();
+        UpdateStateDisplay(snapshot);
+
+        // Seed the user-editable tuning controls from the confirmed radio state so
+        // they open showing the radio's actual settings. The main display stays
+        // server-driven; these are the pending values the operator turns and sets.
+        if (long.TryParse(snapshot.FrequencyText, out var f)) FrequencyAValue = f;
+        if (long.TryParse(snapshot.FrequencyBText, out var fb)) FrequencyBValue = fb;
+        BandText = snapshot.Band ?? "";
+        ModeText = snapshot.Dropdowns.GetValueOrDefault("Mode", "");
+        FilterText = snapshot.Dropdowns.GetValueOrDefault("Filter", "");
+
+        UpdateTuningState();
         AddNotice("info", "State snapshot latched");
     }
 
@@ -1524,31 +1670,6 @@ public sealed class MainWindowViewModel : ObservableObject
             {
                 _connectedUsers.Add(entry.User);
             }
-        }
-
-        if (state.Dropdowns.TryGetValue("Mode", out var dropdownMode))
-        {
-            ModeText = dropdownMode;
-        }
-
-        if (state.Dropdowns.TryGetValue("Filter", out var dropdownFilter))
-        {
-            FilterText = dropdownFilter;
-        }
-
-        if (!string.IsNullOrEmpty(state.Band))
-        {
-            BandText = state.Band;
-        }
-
-        if (long.TryParse(state.FrequencyText, out var frequencyHz))
-        {
-            FrequencyAValue = frequencyHz;
-        }
-
-        if (long.TryParse(state.FrequencyBText, out var frequencyBHz))
-        {
-            FrequencyBValue = frequencyBHz;
         }
 
         RadioDisplay = string.IsNullOrEmpty(state.Driver)
@@ -1637,6 +1758,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 _radioClosed = true;
                 OnPropertyChanged(nameof(CanControlChannels));
                 OnPropertyChanged(nameof(CanSetFrequencyB));
+                UpdateTuningState();
             }
         }
 

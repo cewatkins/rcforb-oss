@@ -126,6 +126,19 @@ comment, so a failing test points at the paragraph that defines it. The guest te
 against a loopback imitator (`FakeV07Server`) and assert on the bytes that actually reached
 each socket, which is how "no login, no transmit" is enforced rather than merely intended.
 
+## Release
+
+GitHub Actions builds and tests on every push, and publishes a **self-contained win-x64**
+`rcforb-gui.exe` (bundles the .NET 10 runtime, Avalonia, SoundFlow/miniaudio, Speex) as a
+release asset on each published release. Download `rcforb-gui-win-x64.zip` from the release
+page and run `rcforb-gui.exe` directly — nothing needs pre-installed on the target machine.
+
+```
+dotnet publish src/RCForb.Gui -c Release -r win-x64 --self-contained
+```
+
+produces the same folder locally.
+
 ## Dependencies
 
 | Package | Version | Licence | Why |

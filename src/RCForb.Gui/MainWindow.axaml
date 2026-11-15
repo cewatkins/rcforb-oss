@@ -139,7 +139,14 @@
 
           <!-- Channel control section (hidden in listen-only mode) -->
         <StackPanel Spacing="4" IsVisible="{Binding ShowChannelControls}">
-          <TextBlock Text="Channel control" Classes="h1" />
+          <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+            <TextBlock Text="Channel control" Classes="h1" VerticalAlignment="Center" />
+            <Border Grid.Column="1" Padding="8,4" CornerRadius="4" VerticalAlignment="Center"
+                    Background="{Binding TuningStatusBrush}">
+              <TextBlock Text="{Binding TuningStatusText}" FontSize="10" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextOnAccentBrush}" />
+            </Border>
+          </Grid>
           <TextBlock Text="Connect with authentication to change the radio." FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" IsVisible="{Binding ShowChannelControlsHint}" />
           <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
             <!-- Row 1: VFO A (Hz) -->
