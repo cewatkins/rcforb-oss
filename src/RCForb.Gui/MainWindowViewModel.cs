@@ -187,10 +187,6 @@ public sealed class MainWindowViewModel : ObservableObject
         _volumePercent = Math.Clamp(_settings.VolumePercent, 0, 100);
         OnPropertyChanged(nameof(VolumePercent));
 
-        _classicMode = _settings.ClassicMode;
-        OnPropertyChanged(nameof(ClassicMode));
-        OnPropertyChanged(nameof(ClassicModeLabel));
-
         _ = RefreshDirectoryAsync();
     }
 
@@ -822,7 +818,7 @@ public sealed class MainWindowViewModel : ObservableObject
         SaveSettings();
     }
 
-    public void SaveSettings()
+    private void SaveSettings()
     {
         _settings.BufferMs = BufferMs;
         _settings.RecordPath = RecordPath;
@@ -836,7 +832,6 @@ public sealed class MainWindowViewModel : ObservableObject
         _settings.ListenOnly = ListenOnly;
         _settings.ShowChatTimestamps = ShowChatTimestamps;
         _settings.Theme = IsDarkTheme ? "Dark" : "Light";
-        _settings.ClassicMode = ClassicMode;
         _settingsService.Save(_settings);
     }
 

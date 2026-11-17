@@ -14,5 +14,4 @@ public sealed class AppSettings
     public string ManualAudioPort { get; set; } = "4524";
     public string? SelectedAudioDevice { get; set; }
     public int VolumePercent { get; set; } = 100;
-    public bool ClassicMode { get; set; } = true;
 }

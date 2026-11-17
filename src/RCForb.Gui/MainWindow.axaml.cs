@@ -32,9 +32,6 @@ public partial class MainWindow : Window
         {
             ChatInputBox.KeyDown += OnChatInputKeyDown;
         }
-
-        // Apply classic mode on startup if enabled
-        ApplyClassicMode(ViewModel.ClassicMode);
     }
 
     private void OnConnectClick(object? sender, RoutedEventArgs e)
@@ -56,7 +53,6 @@ public partial class MainWindow : Window
     {
         ViewModel.ClassicMode = !ViewModel.ClassicMode;
         ApplyClassicMode(ViewModel.ClassicMode);
-        ViewModel.SaveSettings();
     }
 
     private void ApplyClassicMode(bool on)
