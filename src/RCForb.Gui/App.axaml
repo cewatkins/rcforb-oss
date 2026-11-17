@@ -7,33 +7,85 @@
     <ResourceDictionary>
       <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Dark">
-          <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="#0E0F12" />
-          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#181A1F" />
-          <SolidColorBrush x:Key="PanelBorderBrush" Color="#2C2F37" />
-          <SolidColorBrush x:Key="AccentBrush" Color="#A879F0" />
-          <SolidColorBrush x:Key="TextPrimaryBrush" Color="#E4E6EA" />
-          <SolidColorBrush x:Key="TextSecondaryBrush" Color="#9AA0AA" />
-          <SolidColorBrush x:Key="ErrorBrush" Color="#D93A30" />
-          <SolidColorBrush x:Key="WarningBrush" Color="#E5B45C" />
-          <SolidColorBrush x:Key="InfoBrush" Color="#5AA9E6" />
-          <SolidColorBrush x:Key="SuccessBrush" Color="#3FCF8E" />
-          <SolidColorBrush x:Key="TextOnAccentBrush" Color="#0E0F12" />
+          <!-- Radio chassis palette -->
+          <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="#121317" />
+          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#1c1d22" />
+          <SolidColorBrush x:Key="PanelBorderBrush" Color="#3a3c43" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#a879f0" />
+          <SolidColorBrush x:Key="TextPrimaryBrush" Color="#e4e6ea" />
+          <SolidColorBrush x:Key="TextSecondaryBrush" Color="#9aa0aa" />
+          <SolidColorBrush x:Key="ErrorBrush" Color="#d93a30" />
+          <SolidColorBrush x:Key="WarningBrush" Color="#e5b45c" />
+          <SolidColorBrush x:Key="InfoBrush" Color="#5aa9e6" />
+          <SolidColorBrush x:Key="SuccessBrush" Color="#3fcf8e" />
+          <SolidColorBrush x:Key="TextOnAccentBrush" Color="#0e0f12" />
+
+          <!-- Analog meter palette (cream-faced VU/S-meter) -->
+          <SolidColorBrush x:Key="MeterFaceBrush" Color="#e8d7a8" />
+          <SolidColorBrush x:Key="MeterBezelBrush" Color="#231f19" />
+          <SolidColorBrush x:Key="MeterBrassBrush" Color="#9c8a55" />
+          <SolidColorBrush x:Key="MeterRimBrush" Color="#c9b77e" />
+          <SolidColorBrush x:Key="MeterInkBrush" Color="#1a1712" />
+          <SolidColorBrush x:Key="MeterRedZoneBrush" Color="#c8201e" />
+
+          <!-- 3D raised panel / button -->
+          <SolidColorBrush x:Key="ChassisLightBrush" Color="#2a2b30" />
+          <SolidColorBrush x:Key="ChassisShadowBrush" Color="#0a0b0e" />
+          <SolidColorBrush x:Key="ButtonFaceBrush" Color="#2c2d33" />
+          <SolidColorBrush x:Key="ButtonFacePressedBrush" Color="#1e1f23" />
+          <SolidColorBrush x:Key="ButtonHighlightBrush" Color="#44454c" />
+          <SolidColorBrush x:Key="ButtonShadowBrush" Color="#16171a" />
+
+          <!-- Classic mode: original RCForb .exe look (gray Windows client) -->
+          <SolidColorBrush x:Key="ClassicPanelBrush" Color="#c0c0c0" />
+          <SolidColorBrush x:Key="ClassicPanelDarkBrush" Color="#808080" />
+          <SolidColorBrush x:Key="ClassicButtonFaceBrush" Color="#c0c0c0" />
+          <SolidColorBrush x:Key="ClassicButtonHighlightBrush" Color="#ffffff" />
+          <SolidColorBrush x:Key="ClassicButtonShadowBrush" Color="#404040" />
+          <SolidColorBrush x:Key="ClassicButtonDarkShadowBrush" Color="#808080" />
+          <SolidColorBrush x:Key="ClassicTextBrush" Color="#000000" />
+          <SolidColorBrush x:Key="ClassicAccentBrush" Color="#000080" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
-          <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="#F2F3F7" />
-          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#FFFFFF" />
-          <SolidColorBrush x:Key="PanelBorderBrush" Color="#D9DDE3" />
-          <SolidColorBrush x:Key="AccentBrush" Color="#7C3AED" />
-          <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1B1E22" />
-          <SolidColorBrush x:Key="TextSecondaryBrush" Color="#5C636B" />
-          <SolidColorBrush x:Key="ErrorBrush" Color="#C92A2A" />
-          <SolidColorBrush x:Key="WarningBrush" Color="#8A6D00" />
-          <SolidColorBrush x:Key="InfoBrush" Color="#2B5CC9" />
-          <SolidColorBrush x:Key="SuccessBrush" Color="#2F8F4F" />
-          <SolidColorBrush x:Key="TextOnAccentBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="#f2f3f7" />
+          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#ffffff" />
+          <SolidColorBrush x:Key="PanelBorderBrush" Color="#d9dde3" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#7c3aed" />
+          <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1b1e22" />
+          <SolidColorBrush x:Key="TextSecondaryBrush" Color="#5c636b" />
+          <SolidColorBrush x:Key="ErrorBrush" Color="#c92a2a" />
+          <SolidColorBrush x:Key="WarningBrush" Color="#8a6d00" />
+          <SolidColorBrush x:Key="InfoBrush" Color="#2b5cc9" />
+          <SolidColorBrush x:Key="SuccessBrush" Color="#2f8f4f" />
+          <SolidColorBrush x:Key="TextOnAccentBrush" Color="#ffffff" />
+
+          <SolidColorBrush x:Key="MeterFaceBrush" Color="#e8d7a8" />
+          <SolidColorBrush x:Key="MeterBezelBrush" Color="#231f19" />
+          <SolidColorBrush x:Key="MeterBrassBrush" Color="#9c8a55" />
+          <SolidColorBrush x:Key="MeterRimBrush" Color="#c9b77e" />
+          <SolidColorBrush x:Key="MeterInkBrush" Color="#1a1712" />
+          <SolidColorBrush x:Key="MeterRedZoneBrush" Color="#c8201e" />
+
+          <SolidColorBrush x:Key="ChassisLightBrush" Color="#e0e2e8" />
+          <SolidColorBrush x:Key="ChassisShadowBrush" Color="#b9bcbf" />
+          <SolidColorBrush x:Key="ButtonFaceBrush" Color="#d9dde3" />
+          <SolidColorBrush x:Key="ButtonFacePressedBrush" Color="#c4c6cd" />
+          <SolidColorBrush x:Key="ButtonHighlightBrush" Color="#ffffff" />
+          <SolidColorBrush x:Key="ButtonShadowBrush" Color="#a8abb2" />
+
+          <!-- Classic mode: original RCForb .exe look (gray Windows client) -->
+          <SolidColorBrush x:Key="ClassicPanelBrush" Color="#c0c0c0" />
+          <SolidColorBrush x:Key="ClassicPanelDarkBrush" Color="#808080" />
+          <SolidColorBrush x:Key="ClassicButtonFaceBrush" Color="#c0c0c0" />
+          <SolidColorBrush x:Key="ClassicButtonHighlightBrush" Color="#ffffff" />
+          <SolidColorBrush x:Key="ClassicButtonShadowBrush" Color="#404040" />
+          <SolidColorBrush x:Key="ClassicButtonDarkShadowBrush" Color="#808080" />
+          <SolidColorBrush x:Key="ClassicTextBrush" Color="#000000" />
+          <SolidColorBrush x:Key="ClassicAccentBrush" Color="#000080" />
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
       <FontFamily x:Key="InterFontFamily">avares://Avalonia.Fonts.Inter/Assets#Inter</FontFamily>
+      <FontFamily x:Key="MonoFontFamily">avares://Avalonia.Fonts.Inter/Assets#Inter</FontFamily>
     </ResourceDictionary>
   </Application.Resources>
 
@@ -45,13 +97,88 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
-    <Style Selector="Border.panel">
+    <!-- Radio chassis panel -->
+    <Style Selector="Border.chassis">
       <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Padding" Value="12" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="14" />
       <Setter Property="Margin" Value="8" />
+    </Style>
+
+    <!-- Section header -->
+    <Style Selector="TextBlock.radio-label">
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="Margin" Value="0,0,4,6" />
+      <Setter Property="LetterSpacing" Value="0.5" />
+    </Style>
+
+    <Style Selector="TextBlock.radio-value">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <!-- Large frequency readout -->
+    <Style Selector="TextBlock.frequency">
+      <Setter Property="FontSize" Value="60" />
+      <Setter Property="FontWeight" Value="Light" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="FontFamily" Value="{DynamicResource MonoFontFamily}" />
+    </Style>
+
+    <!-- 3D raised button -->
+    <Style Selector="Button.radio">
+      <Setter Property="Background">
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+          <GradientStop Offset="0" Color="{DynamicResource ButtonHighlightBrush}" />
+          <GradientStop Offset="1" Color="{DynamicResource ButtonFaceBrush}" />
+        </LinearGradientBrush>
+      </Setter>
+      <Setter Property="BorderBrush" Value="{DynamicResource ButtonShadowBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Padding" Value="14,8" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="MinHeight" Value="36" />
+    </Style>
+
+    <Style Selector="Button.radio:pressed">
+      <Setter Property="Background" Value="{DynamicResource ButtonFacePressedBrush}" />
+    </Style>
+    <Style Selector="Button.radio:pointerover">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
+    </Style>
+
+    <Style Selector="Button.radio.primary">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
+    </Style>
+    <Style Selector="Button.radio.primary:pointerover">
+      <Setter Property="Opacity" Value="0.9" />
+    </Style>
+
+    <!-- Indicator lamp -->
+    <Style Selector="Border.lamp">
+      <Setter Property="Width" Value="14" />
+      <Setter Property="Height" Value="14" />
+      <Setter Property="CornerRadius" Value="7" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ButtonShadowBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <!-- Meter bezel: analog gauge housing -->
+    <Style Selector="Border.meter-bezel">
+      <Setter Property="Background" Value="{DynamicResource MeterBezelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource MeterBrassBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="8" />
     </Style>
 
     <Style Selector="TextBlock.h1">
@@ -59,12 +186,6 @@
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
       <Setter Property="Margin" Value="0,0,0,8" />
-    </Style>
-
-    <Style Selector="TextBlock.frequency">
-      <Setter Property="FontSize" Value="56" />
-      <Setter Property="FontWeight" Value="Light" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
     <Style Selector="TextBlock.label">
@@ -78,24 +199,9 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
-    <Style Selector="Button.primary">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Padding" Value="16,6" />
-      <Setter Property="CornerRadius" Value="6" />
-    </Style>
-
-    <Style Selector="Button.secondary">
-      <Setter Property="Background" Value="{DynamicResource PanelBorderBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-      <Setter Property="Padding" Value="12,6" />
-      <Setter Property="CornerRadius" Value="6" />
-    </Style>
-
     <Style Selector="ProgressBar">
-      <Setter Property="Height" Value="8" />
-      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Height" Value="10" />
+      <Setter Property="CornerRadius" Value="5" />
       <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
       <Setter Property="Background" Value="{DynamicResource PanelBorderBrush}" />
     </Style>
@@ -116,6 +222,79 @@
     <Style Selector="ListBoxItem">
       <Setter Property="Padding" Value="8,6" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+
+    <!-- ============ Classic mode (original RCForb .exe look) ============ -->
+    <Style Selector="Border.chassis.classic">
+      <Setter Property="Background" Value="{DynamicResource ClassicPanelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ClassicPanelDarkBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="Padding" Value="6" />
+      <Setter Property="Margin" Value="4" />
+    </Style>
+
+    <Style Selector="Button.radio.classic">
+      <Setter Property="Background" Value="{DynamicResource ClassicButtonFaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ClassicButtonDarkShadowBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="Foreground" Value="{DynamicResource ClassicTextBrush}" />
+      <Setter Property="FontWeight" Value="Normal" />
+      <Setter Property="Padding" Value="8,4" />
+      <Setter Property="CornerRadius" Value="2" />
+      <Setter Property="MinHeight" Value="24" />
+    </Style>
+
+    <Style Selector="Button.radio.classic.primary">
+      <Setter Property="Background" Value="{DynamicResource ClassicButtonFaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ClassicButtonDarkShadowBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ClassicAccentBrush}" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style Selector="TextBlock.radio-label.classic, TextBlock.radio-value.classic">
+      <Setter Property="Foreground" Value="{DynamicResource ClassicTextBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.frequency.classic">
+      <Setter Property="Foreground" Value="{DynamicResource ClassicTextBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.label.classic">
+      <Setter Property="Foreground" Value="{DynamicResource ClassicTextBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.value.classic">
+      <Setter Property="Foreground" Value="{DynamicResource ClassicTextBrush}" />
+    </Style>
+
+    <Style Selector="Border.lamp.classic">
+      <Setter Property="BorderBrush" Value="{DynamicResource ClassicButtonDarkShadowBrush}" />
+    </Style>
+
+    <Style Selector="TextBox.classic, ComboBox.classic, NumericUpDown.classic">
+      <Setter Property="Background" Value="{DynamicResource ClassicPanelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ClassicButtonDarkShadowBrush}" />
+      <Setter Property="CornerRadius" Value="1" />
+    </Style>
+
+    <Style Selector="ProgressBar.classic">
+      <Setter Property="Foreground" Value="{DynamicResource ClassicAccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ClassicButtonShadowBrush}" />
+    </Style>
+
+    <Style Selector="ListBox.classic">
+      <Setter Property="Background" Value="{DynamicResource ClassicPanelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ClassicButtonDarkShadowBrush}" />
+      <Setter Property="CornerRadius" Value="1" />
+    </Style>
+
+    <Style Selector="Border.meter-bezel.classic">
+      <Setter Property="Background" Value="{DynamicResource ClassicPanelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ClassicButtonDarkShadowBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="2" />
+      <Setter Property="Padding" Value="4" />
     </Style>
 
   </Application.Styles>

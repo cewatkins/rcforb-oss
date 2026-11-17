@@ -56,6 +56,8 @@ public sealed class MainWindowViewModel : ObservableObject
     private double _needleValue;
     private double _needleSmoothed = -40.0;
     private string _needleValueText = "";
+    private double _vuPeak = -40.0;
+    private bool _vuPeakLit;
     private bool _waveformVisible = true;
     private bool _needleVisible = true;
     private bool _isDarkTheme = true;
@@ -68,6 +70,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private TimeSpan _elapsed;
     private bool _isConnected;
     private bool _reconnectEnabled;
+    private bool _classicMode;
     private bool _recordEnabled;
     private string _recordPath = "";
     private bool _playbackEnabled = true;
@@ -224,6 +227,22 @@ public sealed class MainWindowViewModel : ObservableObject
         get => _reconnectEnabled;
         set => SetProperty(ref _reconnectEnabled, value);
     }
+
+    /// <summary>When on, restyles the interface to resemble the original RCForb .exe
+    /// (gray Windows client look) — a receive-side visual mode, no license needed.</summary>
+    public bool ClassicMode
+    {
+        get => _classicMode;
+        set
+        {
+            if (SetProperty(ref _classicMode, value))
+            {
+                OnPropertyChanged(nameof(ClassicModeLabel));
+            }
+        }
+    }
+
+    public string ClassicModeLabel => ClassicMode ? "Modern" : "Classic";
 
     public bool RecordEnabled
     {
@@ -566,6 +585,20 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         get => _needleValueText;
         private set => SetProperty(ref _needleValueText, value);
+    }
+
+    /// <summary>Peak-hold VU level (sticks at the highest recent value, decays slowly).</summary>
+    public double VuPeak
+    {
+        get => _vuPeak;
+        private set => SetProperty(ref _vuPeak, value);
+    }
+
+    /// <summary>True when the peak-hold jewel lamp is lit (signal in the red zone).</summary>
+    public bool VuPeakLit
+    {
+        get => _vuPeakLit;
+        private set => SetProperty(ref _vuPeakLit, value);
     }
 
     public bool CanConnectManual => IsNotConnected && !string.IsNullOrWhiteSpace(ManualHost);
@@ -1256,6 +1289,8 @@ public sealed class MainWindowViewModel : ObservableObject
         NeedleValue = -40.0;
         NeedleValueText = "";
         _needleSmoothed = -40.0;
+        VuPeak = -40.0;
+        VuPeakLit = false;
 
         _modeOptions.Clear();
         _filterOptions.Clear();
@@ -2015,6 +2050,19 @@ public sealed class MainWindowViewModel : ObservableObject
         _needleSmoothed = Math.Clamp(_needleSmoothed, -40.0, 3.0);
         NeedleValue = _needleSmoothed;
         NeedleValueText = _needleSmoothed <= -39.5 ? "-40 dB" : $"{_needleSmoothed:0.0} dB";
+
+        // Peak-hold tracking for the VU jewel lamp.
+        if (_needleSmoothed > VuPeak)
+        {
+            VuPeak = _needleSmoothed;
+            VuPeakLit = _needleSmoothed >= 0.0;
+        }
+        else
+        {
+            // Slow decay of the peak hold.
+            VuPeak = Math.Max(_needleSmoothed, VuPeak - 0.5);
+            VuPeakLit = VuPeak >= 0.0;
+        }
     }
 
     private sealed class GuestTotals

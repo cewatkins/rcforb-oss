@@ -3,363 +3,438 @@
         xmlns:local="using:RCForb.Gui"
         x:Class="RCForb.Gui.MainWindow"
         Title="{Binding WindowTitle}"
-        Width="1280" Height="800"
-        MinWidth="1024" MinHeight="700"
+        Width="1300" Height="840"
+        MinWidth="1024" MinHeight="720"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource ConsoleBackgroundBrush}"
         FontFamily="{DynamicResource InterFontFamily}">
 
-  <Grid ColumnDefinitions="320,*,340" RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto,Auto">
 
-    <!-- Top status bar -->
-    <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0"
-            Classes="panel"
-            Margin="8,8,8,0">
-      <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
-
-        <Border Background="{DynamicResource PanelBorderBrush}"
-                CornerRadius="4" Padding="8,4"
-                VerticalAlignment="Center">
-          <TextBlock Text="LISTEN ONLY"
-                     FontSize="11" FontWeight="SemiBold"
+    <!-- ============ Brand bar ============ -->
+    <Border Grid.Row="0" Classes="chassis" Padding="14,10,14,10">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <TextBlock Text="rcforb" FontSize="16" FontWeight="Bold"
+                     Foreground="{DynamicResource AccentBrush}" />
+          <TextBlock Text="— listen only" FontSize="12"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
-        </Border>
+        </StackPanel>
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="16,0,0,0" Spacing="12">
-          <TextBlock Text="{Binding Status, StringFormat='{}{0}' }"
-                     FontSize="13" FontWeight="SemiBold"
-                     Foreground="{DynamicResource AccentBrush}"
-                     VerticalAlignment="Center" />
-          <TextBlock Text="{Binding TargetName}"
-                     FontSize="13"
-                     Foreground="{DynamicResource TextSecondaryBrush}"
-                     VerticalAlignment="Center" />
-          <TextBlock Text="{Binding Elapsed, StringFormat='{}{0:hh\\:mm\\:ss}'}"
-                     FontSize="13"
-                     FontFamily="{DynamicResource InterFontFamily}"
-                     Foreground="{DynamicResource TextPrimaryBrush}"
-                     VerticalAlignment="Center" />
-          <Border Grid.Column="1" Padding="6,2" CornerRadius="4" Margin="12,0,0,0"
-                  Background="{DynamicResource ErrorBrush}" IsVisible="{Binding IsRecording}">
-            <TextBlock Text="{Binding RecordingStatus}" FontSize="11" FontWeight="SemiBold"
+        <!-- Frequency readout: large, centered -->
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                    VerticalAlignment="Center" HorizontalAlignment="Center">
+          <TextBlock Text="{Binding FrequencyDisplay}" Classes="frequency" />
+          <Border Grid.Column="1" Padding="6,2" CornerRadius="4" Margin="8,0,0,0"
+                  Background="{DynamicResource MeterRedZoneBrush}" IsVisible="{Binding RadioPoweredOff}">
+            <TextBlock Text="{Binding PowerStateText}" FontSize="10" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextOnAccentBrush}" />
           </Border>
         </StackPanel>
 
-        <WrapPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" ItemSpacing="8" LineSpacing="4" Margin="0,8,0,0" VerticalAlignment="Center">
-          <CheckBox Content="Reconnect" IsChecked="{Binding ReconnectEnabled}" IsEnabled="{Binding IsNotConnected}" />
-          <CheckBox Content="Playback" IsChecked="{Binding PlaybackEnabled}" IsEnabled="{Binding IsNotConnected}" />
-          <CheckBox Content="Record to WAV" IsChecked="{Binding RecordEnabled}" IsEnabled="{Binding IsNotConnected}" />
-          <TextBox Text="{Binding RecordPath}" PlaceholderText="rx.wav" Width="160" IsEnabled="{Binding IsNotConnected}" />
-          <CheckBox Content="Wave" IsChecked="{Binding WaveformVisible}" />
-          <CheckBox Content="VU" IsChecked="{Binding NeedleVisible}" />
-          <Button x:Name="ThemeButton" Content="{Binding ThemeToggleLabel}" Classes="secondary" />
-          <Button x:Name="ConnectButton" Content="Connect" Classes="primary" IsEnabled="{Binding CanConnectManual}" />
-          <Button x:Name="DisconnectButton" Content="Disconnect" Classes="secondary" IsEnabled="{Binding IsConnected}" />
-        </WrapPanel>
+        <!-- Power / session state -->
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8"
+                    VerticalAlignment="Center" HorizontalAlignment="Right">
+          <TextBlock Text="{Binding Status, StringFormat='{}{0}'}"
+                     FontSize="13" FontWeight="SemiBold"
+                     Foreground="{DynamicResource AccentBrush}"
+                     VerticalAlignment="Center" />
+          <Border Classes="lamp"
+                  Background="{Binding PowerStateBrush}"
+                  IsVisible="{Binding IsConnected}" ToolTip.Tip="Power" />
+          <TextBlock Text="{Binding Elapsed, StringFormat='{}{0:hh\:mm\:ss}'}"
+                     FontSize="13" FontFamily="{DynamicResource MonoFontFamily}"
+                     Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+          <TextBlock Text="{Binding Version}" FontSize="10"
+                     Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,0,0,0"
+                     VerticalAlignment="Center" />
+        </StackPanel>
 
-        <!-- Auth row (third row of top bar) -->
-        <WrapPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" ItemSpacing="12" LineSpacing="12" Margin="0,8,0,0" VerticalAlignment="Center">
-          <CheckBox Content="Authenticated" IsChecked="{Binding UseAuth}" IsEnabled="{Binding IsNotConnected}" VerticalAlignment="Center" />
-          <CheckBox Content="Listen only" IsChecked="{Binding ListenOnly}" IsEnabled="{Binding UseAuth}" VerticalAlignment="Center" ToolTip.Tip="Authenticated but no remote control — listen, chat, and view roster only" />
-          <TextBlock Text="User:" VerticalAlignment="Center" />
-          <TextBox Text="{Binding AuthUser}" PlaceholderText="username" Width="120" />
-          <TextBlock Text="Password:" VerticalAlignment="Center" />
-          <TextBox Text="{Binding AuthPassword}" PlaceholderText="password" Width="120" PasswordChar="•" />
-          <Border CornerRadius="4" Padding="8,4,8,4" Background="{Binding AuthStateText, Converter={x:Static local:AuthStateBrushConverter.Instance}}">
-            <TextBlock Text="{Binding AuthStateText}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextOnAccentBrush}" />
-          </Border>
-          <TextBlock Text="{Binding AuthMessageText}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" MaxWidth="320" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-          <Button x:Name="ReLoginButton" Content="Re-login" Classes="secondary" IsEnabled="{Binding CanReLogin}" />
-          <Button x:Name="RevertGuestButton" Content="Revert to guest" Classes="secondary" IsEnabled="{Binding CanRevertToGuest}" />
-        </WrapPanel>
+        <!-- Version badge -->
+        <Border Grid.Column="3" Classes="lamp" Background="{DynamicResource AccentBrush}"
+                ToolTip.Tip="Version" />
       </Grid>
     </Border>
 
-    <!-- Left rail: directory -->
-    <Border Grid.Column="0" Grid.Row="1" Classes="panel">
-      <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
-        <TextBlock Text="Remote directory" Classes="h1" />
-
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
-          <TextBox Text="{Binding DirectoryFilter}" PlaceholderText="Filter…" Width="220" />
-          <Button x:Name="RefreshButton" Content="↻" Classes="secondary" Padding="8,4" />
-        </StackPanel>
-
-        <ListBox Grid.Row="2" x:Name="RemoteListBox"
-                 ItemsSource="{Binding Remotes}"
-                 SelectedItem="{Binding SelectedRemote}">
-          <ListBox.ItemTemplate>
-            <DataTemplate DataType="local:RemoteRecordViewModel">
-              <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,2,0,2">
-                <!-- TX capability (informational; transmit requires a license) -->
-                <TextBlock Grid.Column="0" Text="{Binding DisplayName}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="1" Text="{Binding Detail}" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="6,0,0,0" />
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="6,0,0,0">
-                  <TextBlock Text="TX" FontSize="9" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding CanTransmit}" />
-                  <TextBlock Text="{Binding OrbId}" FontSize="9" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                </StackPanel>
-                <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Endpoint}" FontSize="9" Foreground="{DynamicResource TextSecondaryBrush}" FontFamily="{DynamicResource InterFontFamily}" TextWrapping="Wrap" />
-              </Grid>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-
-        <Button Grid.Row="3" x:Name="JoinButton" Content="Join selected remote" Classes="primary" IsEnabled="{Binding CanConnectRemote}" Margin="0,8,0,0" ToolTip.Tip="Select an online v0.7 remote from the directory first" />
-
-        <TextBlock Grid.Row="4" Text="Manual endpoint" Classes="h1" Margin="0,16,0,0" />
-        <TextBox Grid.Row="5" Text="{Binding ManualHost}" PlaceholderText="Host or IP" Margin="0,0,0,8" />
-        <Grid Grid.Row="6" ColumnDefinitions="*,8,*">
-          <TextBox Text="{Binding ManualControlPort}" PlaceholderText="Control port" />
-          <TextBox Grid.Column="2" Text="{Binding ManualAudioPort}" PlaceholderText="Audio port" />
-        </Grid>
-      </Grid>
-    </Border>
-
-    <!-- Center: live state -->
-    <Border Grid.Column="1" Grid.Row="1" Classes="panel">
-      <ScrollViewer>
-        <StackPanel Spacing="8">
-          <TextBlock Text="Live state" Classes="h1" />
-
-          <Grid ColumnDefinitions="Auto,Auto">
-            <TextBlock Text="{Binding FrequencyDisplay}" Classes="frequency" FontFamily="{DynamicResource InterFontFamily}" />
-            <Border Grid.Column="1" Padding="6,2" CornerRadius="4" Margin="8,0,0,0"
-                    Background="{Binding PowerStateBrush}" IsVisible="{Binding RadioPoweredOff}">
-              <TextBlock Text="{Binding PowerStateText}" FontSize="10" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextOnAccentBrush}" />
-            </Border>
+    <!-- ============ Main panel: frequency + dual VU meters + info ============ -->
+    <Border Grid.Row="1" Classes="chassis" Margin="8,0,8,0" Padding="14">
+      <Grid ColumnDefinitions="300,*,260">
+        <!-- Left: large frequency dial -->
+        <Border Classes="meter-bezel" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Width="250" Height="210">
+          <Grid>
+            <TextBlock Text="{Binding FrequencyDisplay}" Classes="frequency"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding ModeDisplay}" FontSize="20" Foreground="{DynamicResource AccentBrush}"
+                       HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,28" />
           </Grid>
+        </Border>
 
-          <TextBlock Text="{Binding ModeDisplay}" FontSize="24" Foreground="{DynamicResource AccentBrush}" />
-
-          <Grid ColumnDefinitions="Auto,*">
-            <StackPanel Grid.Column="0" Width="300">
-              <TextBlock Text="Band" Classes="label" />
-              <TextBlock Text="{Binding Band}" Classes="value" />
-
-              <TextBlock Text="Radio" Classes="label" />
-              <TextBlock Text="{Binding RadioDisplay}" Classes="value" TextWrapping="Wrap" />
-
-              <TextBlock Text="Protocol" Classes="label" />
-              <TextBlock Text="{Binding ProtocolVersion}" Classes="value" />
-
-              <TextBlock Text="Orb ID" Classes="label" />
-              <TextBlock Text="{Binding OrbId}" Classes="value" />
-
-              <TextBlock Text="S-meter" Classes="label" />
-              <local:SMeterControl Width="220" Height="140"
-                                   Value="{Binding SMeterValue}"
-                                   Readout="{Binding SMeterReadout}"
-                                   Label="S" />
-            </StackPanel>
-
-            <StackPanel Grid.Column="1" Margin="24,0,0,0">
-              <TextBlock Text="VFO B" Classes="label" IsVisible="{Binding HasFrequencyB}" />
-              <TextBlock Text="{Binding FrequencyBDisplay}" Classes="value" IsVisible="{Binding HasFrequencyB}" />
-            </StackPanel>
-          </Grid>
-
-          <!-- Channel control section (hidden in listen-only mode) -->
-        <StackPanel Spacing="4" IsVisible="{Binding ShowChannelControls}">
-          <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,6">
-            <TextBlock Text="Channel control" Classes="h1" VerticalAlignment="Center" />
-            <Border Grid.Column="1" Padding="8,4" CornerRadius="4" VerticalAlignment="Center"
-                    Background="{Binding TuningStatusBrush}">
-              <TextBlock Text="{Binding TuningStatusText}" FontSize="10" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextOnAccentBrush}" />
-            </Border>
-          </Grid>
-          <TextBlock Text="Connect with authentication to change the radio." FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" IsVisible="{Binding ShowChannelControlsHint}" />
-          <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-            <!-- Row 1: VFO A (Hz) -->
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="VFO A (Hz)" Classes="label" VerticalAlignment="Center" />
-            <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding FrequencyAValue}" Minimum="1" Maximum="10000000000" Increment="1000" FormatString="0" Width="200" VerticalAlignment="Center" IsEnabled="{Binding CanControlChannels}" />
-            <Button Grid.Row="0" Grid.Column="2" Content="Set A" Classes="primary" IsEnabled="{Binding CanControlChannels}" x:Name="SetFrequencyAButton" />
-            <!-- Row 2: VFO B (Hz) -->
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="VFO B (Hz)" Classes="label" VerticalAlignment="Center" />
-            <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding FrequencyBValue}" Minimum="1" Maximum="10000000000" Increment="1000" FormatString="0" Width="200" VerticalAlignment="Center" IsEnabled="{Binding CanSetFrequencyB}" />
-            <Button Grid.Row="1" Grid.Column="2" Content="Set B" Classes="primary" IsEnabled="{Binding CanSetFrequencyB}" x:Name="SetFrequencyBButton" />
-            <!-- Row 3: Band -->
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Band" Classes="label" VerticalAlignment="Center" />
-            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding BandText}" PlaceholderText="e.g. 40M" Width="200" IsEnabled="{Binding CanControlChannels}" />
-            <Button Grid.Row="2" Grid.Column="2" Content="Set band" Classes="primary" IsEnabled="{Binding CanControlChannels}" x:Name="SetBandButton" />
-            <!-- Row 4: Mode -->
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Mode" Classes="label" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ModeOptions}" SelectedItem="{Binding ModeText}" Width="200" IsEnabled="{Binding HasModeOptions}" />
-            <Button Grid.Row="3" Grid.Column="2" Content="Set mode" Classes="primary" IsEnabled="{Binding CanControlChannels}" x:Name="SetModeButton" />
-            <!-- Row 5: Filter -->
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Filter" Classes="label" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding FilterText}" Width="200" IsEnabled="{Binding HasFilterOptions}" />
-            <Button Grid.Row="4" Grid.Column="2" Content="Set filter" Classes="primary" IsEnabled="{Binding CanControlChannels}" x:Name="SetFilterButton" />
-          </Grid>
-        </StackPanel>
-
-        <StackPanel Spacing="4" Margin="0,4,0,0">
-          <TextBlock Text="Wave" Classes="label" IsVisible="{Binding WaveformVisible}" />
-            <local:WaveformControl Height="80"
-                                   Samples="{Binding WaveformSamples}"
-                                   Stroke="{DynamicResource AccentBrush}"
-                                   FillBrush="{DynamicResource AccentBrush}"
-                                   IsVisible="{Binding WaveformVisible}" />
-
-            <TextBlock Text="VU level" Classes="label" IsVisible="{Binding NeedleVisible}" />
-            <local:NeedleGaugeControl Width="240" Height="150"
+        <!-- Center: dual VU meters (left / right channel) -->
+        <Border Grid.Column="1" Classes="meter-bezel" HorizontalAlignment="Center"
+                VerticalAlignment="Center" Width="460" Height="210">
+          <Grid ColumnDefinitions="*,12,*">
+            <local:NeedleGaugeControl Grid.Column="0"
+                                      Minimum="-20" Maximum="3"
                                       Value="{Binding NeedleValue}"
-                                      Minimum="-40" Maximum="3"
-                                      Label="VU"
-                                      ValueText="{Binding NeedleValueText}"
+                                      PeakValue="{Binding VuPeak}"
+                                      IsPeakLit="{Binding VuPeakLit}"
+                                      Label="VU L" ValueText="{Binding NeedleValueText, StringFormat='{}{0:0} dB'}"
                                       NeedleBrush="{DynamicResource AccentBrush}"
-                                      TrackBrush="{DynamicResource PanelBorderBrush}"
-                                      TickBrush="{DynamicResource TextSecondaryBrush}"
-                                      TextBrush="{DynamicResource TextPrimaryBrush}"
-                                      GreenZoneBrush="{DynamicResource SuccessBrush}"
-                                      YellowZoneBrush="{DynamicResource WarningBrush}"
-                                      RedZoneBrush="{DynamicResource ErrorBrush}"
                                       IsVisible="{Binding NeedleVisible}" />
+            <local:NeedleGaugeControl Grid.Column="2"
+                                      Minimum="-20" Maximum="3"
+                                      Value="{Binding NeedleValue}"
+                                      PeakValue="{Binding VuPeak}"
+                                      IsPeakLit="{Binding VuPeakLit}"
+                                      Label="VU R" ValueText="{Binding NeedleValueText, StringFormat='{}{0:0} dB'}"
+                                      NeedleBrush="{DynamicResource AccentBrush}"
+                                      IsVisible="{Binding NeedleVisible}" />
+          </Grid>
+        </Border>
+
+        <!-- Right: station info -->
+        <Border Grid.Column="2" VerticalAlignment="Center">
+          <StackPanel Spacing="10">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <TextBlock Text="Radio" Classes="radio-label" />
+              <TextBlock Text="{Binding RadioDisplay}" Classes="radio-value" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <TextBlock Text="Band" Classes="radio-label" />
+              <TextBlock Text="{Binding Band}" Classes="radio-value" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <TextBlock Text="Protocol" Classes="radio-label" />
+              <TextBlock Text="{Binding ProtocolVersion}" Classes="radio-value" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <TextBlock Text="Orb ID" Classes="radio-label" />
+              <TextBlock Text="{Binding OrbId}" Classes="radio-value" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Border>
+
+    <!-- ============ Button row: physical radio buttons ============ -->
+    <Border Grid.Row="2" Classes="chassis" Margin="8,0,8,0" Padding="12,8,12,8">
+      <WrapPanel Orientation="Horizontal" VerticalAlignment="Center" ItemSpacing="10">
+        <Button Content="Connect" Classes="radio primary" IsEnabled="{Binding CanConnectManual}"
+                Click="OnConnectClick" ToolTip.Tip="Connect to the manual endpoint" />
+        <Button Content="Disconnect" Classes="radio" IsEnabled="{Binding IsConnected}"
+                Click="OnDisconnectClick" ToolTip.Tip="Disconnect from the remote" />
+        <Button Content="Record" Classes="radio" IsEnabled="{Binding IsNotConnected}"
+                Click="OnRecordToggleClick" ToolTip.Tip="Record received audio to WAV" />
+        <Border Classes="lamp" Background="{DynamicResource ErrorBrush}"
+                IsVisible="{Binding IsRecording}" ToolTip.Tip="Recording" />
+        <TextBlock Text="{Binding RecordingStatus}" FontSize="11" FontWeight="SemiBold"
+                   Foreground="{DynamicResource ErrorBrush}" VerticalAlignment="Center"
+                   IsVisible="{Binding IsRecording}" />
+        <Button Content="TX" Classes="radio" IsEnabled="{Binding CanControlChannels}"
+                Click="OnTxClick" ToolTip.Tip="Transmit (requires license — not implemented)" />
+        <Border Classes="lamp" Background="{DynamicResource WarningBrush}"
+                IsVisible="{Binding CanTransmit}" ToolTip.Tip="Remote supports TX" />
+        <TextBlock Text="TX capable" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"
+                   VerticalAlignment="Center" IsVisible="{Binding CanTransmit}" />
+        <Button Content="Re-login" Classes="radio" IsEnabled="{Binding CanReLogin}"
+                Click="OnReLoginClick" ToolTip.Tip="Re-login with current credentials" />
+        <Button Content="Revert to guest" Classes="radio" IsEnabled="{Binding CanRevertToGuest}"
+                Click="OnRevertGuestClick" ToolTip.Tip="Revert to guest posture" />
+        <Button Content="{Binding ThemeToggleLabel}" Classes="radio" Click="OnThemeClick" />
+        <Button Content="{Binding ClassicModeLabel}" Classes="radio" Click="OnClassicClick"
+                ToolTip.Tip="Toggle modern 3D look vs original .exe classic look" />
+      </WrapPanel>
+    </Border>
+
+    <!-- ============ Body: directory | live state | chat + notices ============ -->
+    <Grid Grid.Row="3" ColumnDefinitions="300,*,340">
+
+      <!-- Left rail: directory -->
+      <Border Grid.Column="0" Classes="chassis">
+        <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
+          <TextBlock Text="Remote directory" Classes="h1" />
+
+          <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+            <TextBox Text="{Binding DirectoryFilter}" PlaceholderText="Filter by name / OrbID…"
+                     Width="200" />
+            <Button Content="↻" Classes="radio" Padding="8,4" Click="OnRefreshClick" />
           </StackPanel>
 
-          <TextBlock Text="Other state from the server" Classes="label"
-                     IsVisible="{Binding UnknownKeys.Count, Converter={x:Static local:CountToVisibilityConverter.Instance}}" />
-          <ItemsControl ItemsSource="{Binding UnknownKeys}"
-                        IsVisible="{Binding UnknownKeys.Count, Converter={x:Static local:CountToVisibilityConverter.Instance}}">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate DataType="local:StateItemViewModel">
-                <Grid ColumnDefinitions="Auto,*">
-                  <TextBlock Text="{Binding Key}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,8,0" />
-                  <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap" />
+          <ListBox Grid.Row="2" x:Name="RemoteListBox"
+                   ItemsSource="{Binding Remotes}"
+                   SelectedItem="{Binding SelectedRemote}">
+            <ListBox.ItemTemplate>
+              <DataTemplate DataType="local:RemoteRecordViewModel">
+                <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,2,0,2">
+                  <TextBlock Grid.Column="0" Text="{Binding DisplayName}" FontWeight="SemiBold"
+                             TextWrapping="Wrap" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{Binding Detail}" FontSize="10"
+                             Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"
+                             VerticalAlignment="Center" Margin="6,0,0,0" />
+                  <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6"
+                              VerticalAlignment="Center" Margin="6,0,0,0">
+                    <TextBlock Text="TX" FontSize="9" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}"
+                               IsVisible="{Binding CanTransmit}" />
+                    <TextBlock Text="{Binding OrbId}" FontSize="9"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               VerticalAlignment="Center" />
+                  </StackPanel>
+                  <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Endpoint}" FontSize="9"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             FontFamily="{DynamicResource MonoFontFamily}" TextWrapping="Wrap" />
                 </Grid>
               </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </StackPanel>
-      </ScrollViewer>
-    </Border>
+            </ListBox.ItemTemplate>
+          </ListBox>
 
-    <!-- Right: chat and notices -->
-    <Border Grid.Column="2" Grid.Row="1" Classes="panel">
-      <Grid RowDefinitions="*,Auto,Auto,*">
-        <Grid Grid.Row="0" RowDefinitions="Auto,Auto,*">
-          <Border Background="{DynamicResource ErrorBrush}" CornerRadius="6" Padding="8,6" Margin="0,0,0,8" IsVisible="{Binding HasRestriction}">
+          <Button Grid.Row="3" x:Name="JoinButton" Content="Join selected remote" Classes="radio primary"
+                  IsEnabled="{Binding CanConnectRemote}" Click="OnJoinClick"
+                  Margin="0,8,0,0"
+                  ToolTip.Tip="Select an online v0.7 remote from the directory first" />
+
+          <TextBlock Grid.Row="4" Text="Manual endpoint" Classes="h1" Margin="0,16,0,0" />
+          <TextBox Grid.Row="5" Text="{Binding ManualHost}" PlaceholderText="Host or IP"
+                   Margin="0,0,0,8" />
+          <Grid Grid.Row="6" ColumnDefinitions="*,8,*">
+            <TextBox Text="{Binding ManualControlPort}" PlaceholderText="Control port" />
+            <TextBox Grid.Column="2" Text="{Binding ManualAudioPort}" PlaceholderText="Audio port" />
+          </Grid>
+        </Grid>
+      </Border>
+
+      <!-- Center: live state details -->
+      <Border Grid.Column="1" Classes="chassis">
+        <ScrollViewer>
+          <StackPanel Spacing="10">
+            <TextBlock Text="Live state" Classes="h1" />
+
+            <!-- S-meter -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="S-meter" Classes="radio-label" />
+              <Border Classes="meter-bezel" Height="170" HorizontalAlignment="Left" Width="220">
+                <local:SMeterControl Value="{Binding SMeterValue}" Readout="{Binding SMeterReadout}"
+                                     Label="S" />
+              </Border>
+            </StackPanel>
+
+            <!-- Waveform -->
+            <StackPanel Spacing="4" IsVisible="{Binding WaveformVisible}">
+              <TextBlock Text="Wave" Classes="radio-label" />
+              <local:WaveformControl Height="70"
+                                     Samples="{Binding WaveformSamples}"
+                                     Stroke="{DynamicResource AccentBrush}"
+                                     FillBrush="{DynamicResource AccentBrush}"
+                                     IsVisible="{Binding WaveformVisible}" />
+            </StackPanel>
+
+            <!-- VU needle -->
+            <StackPanel Spacing="4" IsVisible="{Binding NeedleVisible}">
+              <TextBlock Text="VU level" Classes="radio-label" />
+              <local:NeedleGaugeControl Width="240" Height="150"
+                                        Value="{Binding NeedleValue}" Minimum="-40" Maximum="3"
+                                        Label="VU" ValueText="{Binding NeedleValueText}"
+                                        NeedleBrush="{DynamicResource AccentBrush}"
+                                        IsVisible="{Binding NeedleVisible}" />
+            </StackPanel>
+
+            <!-- Other state -->
+            <TextBlock Text="Other state from the server" Classes="radio-label"
+                       IsVisible="{Binding UnknownKeys.Count, Converter={x:Static local:CountToVisibilityConverter.Instance}}" />
+            <ItemsControl ItemsSource="{Binding UnknownKeys}"
+                          IsVisible="{Binding UnknownKeys.Count, Converter={x:Static local:CountToVisibilityConverter.Instance}}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="local:StateItemViewModel">
+                  <Grid ColumnDefinitions="Auto,*">
+                    <TextBlock Text="{Binding Key}" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,8,0" />
+                    <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="10" Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap" />
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Channel control (authenticated) -->
+            <StackPanel Spacing="6" IsVisible="{Binding ShowChannelControls}">
+              <TextBlock Text="Channel control" Classes="h1" Margin="0,8,0,4" />
+              <Border Background="{Binding TuningStatusBrush}" CornerRadius="6" Padding="8,6">
+                <TextBlock Text="{Binding TuningStatusText}" FontSize="10" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextOnAccentBrush}" />
+              </Border>
+              <TextBlock Text="Connect with authentication to change the radio." FontSize="10"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         IsVisible="{Binding ShowChannelControlsHint}" />
+              <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="VFO A (Hz)" Classes="radio-label" VerticalAlignment="Center" />
+                <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding FrequencyAValue}" Minimum="1" Maximum="10000000000" Increment="1000" FormatString="0" Width="200" VerticalAlignment="Center" IsEnabled="{Binding CanControlChannels}" />
+                <Button Grid.Row="0" Grid.Column="2" Content="Set A" Classes="radio" IsEnabled="{Binding CanControlChannels}" Click="OnSetFrequencyAClick" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="VFO B (Hz)" Classes="radio-label" VerticalAlignment="Center" />
+                <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding FrequencyBValue}" Minimum="1" Maximum="10000000000" Increment="1000" FormatString="0" Width="200" VerticalAlignment="Center" IsEnabled="{Binding CanSetFrequencyB}" />
+                <Button Grid.Row="1" Grid.Column="2" Content="Set B" Classes="radio" IsEnabled="{Binding CanSetFrequencyB}" Click="OnSetFrequencyBClick" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Band" Classes="radio-label" VerticalAlignment="Center" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding BandText}" PlaceholderText="e.g. 40M" Width="200" IsEnabled="{Binding CanControlChannels}" />
+                <Button Grid.Row="2" Grid.Column="2" Content="Set band" Classes="radio" IsEnabled="{Binding CanControlChannels}" Click="OnSetBandClick" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Mode" Classes="radio-label" VerticalAlignment="Center" />
+                <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ModeOptions}" SelectedItem="{Binding ModeText}" Width="200" IsEnabled="{Binding HasModeOptions}" />
+                <Button Grid.Row="3" Grid.Column="2" Content="Set mode" Classes="radio" IsEnabled="{Binding CanControlChannels}" Click="OnSetModeClick" />
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Filter" Classes="radio-label" VerticalAlignment="Center" />
+                <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding FilterText}" Width="200" IsEnabled="{Binding HasFilterOptions}" />
+                <Button Grid.Row="4" Grid.Column="2" Content="Set filter" Classes="radio" IsEnabled="{Binding CanControlChannels}" Click="OnSetFilterClick" />
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+
+      <!-- Right: chat and notices -->
+      <Border Grid.Column="2" Classes="chassis">
+        <Grid RowDefinitions="Auto,Auto,*">
+          <!-- Restriction banner -->
+          <Border Grid.Row="0" Background="{DynamicResource ErrorBrush}" CornerRadius="6" Padding="8,6"
+                  Margin="0,0,0,8" IsVisible="{Binding HasRestriction}">
             <Grid ColumnDefinitions="*,Auto">
-              <TextBlock Text="{Binding RestrictionBanner}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap" VerticalAlignment="Center" />
-              <Button Grid.Column="1" Content="Request" Classes="secondary" Margin="8,0,0,0" Click="OnRequestMembershipClick" ToolTip.Tip="Request club membership / TX access from the remote owner" />
+              <TextBlock Text="{Binding RestrictionBanner}" FontSize="11" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap" VerticalAlignment="Center" />
+              <Button Grid.Column="1" Content="Request" Classes="radio" Margin="8,0,0,0"
+                      Click="OnRequestMembershipClick"
+                      ToolTip.Tip="Request club membership / TX access from the remote owner" />
             </Grid>
           </Border>
+
+          <!-- Chat -->
           <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
             <TextBlock Text="Chat" Classes="h1" />
-            <CheckBox Grid.Column="1" Content="Timestamps" IsChecked="{Binding ShowChatTimestamps}" FontSize="10" VerticalAlignment="Center" />
+            <CheckBox Grid.Column="1" Content="Timestamps" IsChecked="{Binding ShowChatTimestamps}" FontSize="9"
+                      VerticalAlignment="Center" />
           </Grid>
           <ListBox Grid.Row="2" x:Name="ChatListBox" ItemsSource="{Binding ChatLines}">
             <ListBox.ItemTemplate>
               <DataTemplate DataType="local:ChatLineViewModel">
                 <StackPanel>
                   <StackPanel Orientation="Horizontal" Spacing="6">
-                    <TextBlock Text="{Binding Timestamp}" FontSize="9" Foreground="{DynamicResource TextSecondaryBrush}" IsVisible="{Binding DataContext.ShowChatTimestamps, RelativeSource={RelativeSource AncestorType=Window}}" />
-                    <TextBlock Text="{Binding Sender, StringFormat='{}{0}: '}" FontSize="11" Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="{Binding Timestamp}" FontSize="9"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               IsVisible="{Binding DataContext.ShowChatTimestamps, RelativeSource={RelativeSource AncestorType=Window}}" />
+                    <TextBlock Text="{Binding Sender, StringFormat='{}{0}: '}" FontSize="10"
+                               Foreground="{DynamicResource AccentBrush}" />
                   </StackPanel>
-                  <TextBlock Text="{Binding Text}" FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding Text}" FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap" />
                 </StackPanel>
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
-        </Grid>
 
-        <!-- Connected users (roster) -->
-        <Grid Grid.Row="1" RowDefinitions="Auto,*" Margin="0,8,0,0">
-          <TextBlock Text="Connected users" Classes="h1" />
-          <ListBox Grid.Row="1" ItemsSource="{Binding ConnectedUsers}" MaxHeight="90">
-            <ListBox.ItemTemplate>
-              <DataTemplate>
-                <TextBlock Text="{Binding}" FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-        </Grid>
+          <!-- Connected users (roster) -->
+          <Grid Grid.Row="3" RowDefinitions="Auto,*" Margin="0,8,0,0">
+            <TextBlock Text="Connected users" Classes="h1" />
+            <ListBox Grid.Row="1" ItemsSource="{Binding ConnectedUsers}" MaxHeight="90">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding}" FontSize="10" Foreground="{DynamicResource TextPrimaryBrush}" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Grid>
 
-        <!-- Chat input for authenticated sessions -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,8,0,0" IsVisible="{Binding UseAuth}">
-          <TextBox Grid.Column="0" Text="{Binding ChatInput}" PlaceholderText="Type message…" IsEnabled="{Binding IsAuthenticated}" x:Name="ChatInputBox" />
-          <Button Grid.Column="1" Content="Send" Classes="primary" Margin="8,0,0,0" IsEnabled="{Binding IsAuthenticated}" Click="OnSendChatClick" />
-        </Grid>
+          <!-- Chat input -->
+          <Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="0,8,0,0" IsVisible="{Binding UseAuth}">
+            <TextBox Grid.Column="0" Text="{Binding ChatInput}" PlaceholderText="Type message…"
+                     IsEnabled="{Binding IsAuthenticated}" x:Name="ChatInputBox" />
+            <Button Grid.Column="1" Content="Send" Classes="radio" Margin="8,0,0,0"
+                    IsEnabled="{Binding IsAuthenticated}" Click="OnSendChatClick" />
+          </Grid>
 
-        <Grid Grid.Row="3" RowDefinitions="Auto,*" Margin="0,8,0,0">
-          <TextBlock Text="Notices" Classes="h1" />
-          <ListBox Grid.Row="1" x:Name="NoticesListBox" ItemsSource="{Binding Notices}">
-            <ListBox.ItemTemplate>
-              <DataTemplate DataType="local:NoticeViewModel">
-                <StackPanel>
-                  <TextBlock Text="{Binding Timestamp}" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBlock Text="{Binding Display}" FontSize="11" TextWrapping="Wrap"
-                            Foreground="{Binding Kind, Converter={x:Static local:NoticeBrushConverter.Instance}}" />
-                </StackPanel>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
+          <!-- Notices -->
+          <Grid Grid.Row="5" RowDefinitions="Auto,*" Margin="0,8,0,0">
+            <TextBlock Text="Notices" Classes="h1" />
+            <ListBox Grid.Row="1" x:Name="NoticesListBox" ItemsSource="{Binding Notices}">
+              <ListBox.ItemTemplate>
+                <DataTemplate DataType="local:NoticeViewModel">
+                  <StackPanel>
+                    <TextBlock Text="{Binding Timestamp}" FontSize="9"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Display}" FontSize="10"
+                               Foreground="{Binding Kind, Converter={x:Static local:NoticeBrushConverter.Instance}}"
+                               TextWrapping="Wrap" />
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Grid>
         </Grid>
-      </Grid>
-    </Border>
+      </Border>
+    </Grid>
 
-    <!-- Bottom strip: audio and counters -->
-    <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Classes="panel">
+    <!-- ============ Bottom strip: audio + counters ============ -->
+    <Border Grid.Row="4" Classes="chassis" Margin="8,0,8,8" Padding="14,10,14,10">
       <Grid ColumnDefinitions="*,Auto">
         <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
-          <StackPanel Width="160">
-            <TextBlock Text="Audio level" Classes="label" Margin="0,0,0,4" />
+          <StackPanel Width="150">
+            <TextBlock Text="Audio level" Classes="radio-label" Margin="0,0,0,4" />
             <ProgressBar Value="{Binding AudioLevelPercent}" Maximum="100" Height="12" />
           </StackPanel>
 
-          <StackPanel>
-            <TextBlock Text="Buf depth" Classes="label" />
-            <TextBlock Text="{Binding PlayoutDepthMs, StringFormat='{}{0:0} ms'}" Classes="value" FontFamily="{DynamicResource InterFontFamily}" />
+          <StackPanel Width="120">
+            <TextBlock Text="Buf depth" Classes="radio-label" />
+            <TextBlock Text="{Binding PlayoutDepthMs, StringFormat='{}{0:0} ms'}" Classes="radio-value"
+                       FontFamily="{DynamicResource MonoFontFamily}" />
           </StackPanel>
 
-          <StackPanel>
-            <TextBlock Text="Underruns" Classes="label" />
-            <TextBlock Text="{Binding Underruns}" Classes="value" FontFamily="{DynamicResource InterFontFamily}" />
+          <StackPanel Width="90">
+            <TextBlock Text="Underruns" Classes="radio-label" />
+            <TextBlock Text="{Binding Underruns}" Classes="radio-value"
+                       FontFamily="{DynamicResource MonoFontFamily}" />
           </StackPanel>
 
-          <StackPanel>
-            <TextBlock Text="Packets" Classes="label" />
-            <TextBlock Text="{Binding AudioPackets}" Classes="value" FontFamily="{DynamicResource InterFontFamily}" />
+          <StackPanel Width="90">
+            <TextBlock Text="Packets" Classes="radio-label" />
+            <TextBlock Text="{Binding AudioPackets}" Classes="radio-value"
+                       FontFamily="{DynamicResource MonoFontFamily}" />
           </StackPanel>
 
-          <StackPanel>
-            <TextBlock Text="Decoded" Classes="label" />
-            <TextBlock Text="{Binding DecodedSeconds, StringFormat='{}{0:0.0} s'}" Classes="value" FontFamily="{DynamicResource InterFontFamily}" />
+          <StackPanel Width="100">
+            <TextBlock Text="Decoded" Classes="radio-label" />
+            <TextBlock Text="{Binding DecodedSeconds, StringFormat='{}{0:0.0} s'}" Classes="radio-value"
+                       FontFamily="{DynamicResource MonoFontFamily}" />
           </StackPanel>
 
-          <StackPanel>
-            <TextBlock Text="Errors" Classes="label" />
-            <TextBlock Text="{Binding DecodeErrors}" Classes="value" FontFamily="{DynamicResource InterFontFamily}" />
+          <StackPanel Width="80">
+            <TextBlock Text="Errors" Classes="radio-label" />
+            <TextBlock Text="{Binding DecodeErrors}" Classes="radio-value"
+                       FontFamily="{DynamicResource MonoFontFamily}" />
           </StackPanel>
 
-          <StackPanel>
-            <TextBlock Text="Control lines" Classes="label" />
-            <TextBlock Text="{Binding ControlLines}" Classes="value" FontFamily="{DynamicResource InterFontFamily}" />
+          <StackPanel Width="100">
+            <TextBlock Text="Control" Classes="radio-label" />
+            <TextBlock Text="{Binding ControlLines}" Classes="radio-value"
+                       FontFamily="{DynamicResource MonoFontFamily}" />
           </StackPanel>
 
-          <TextBlock Text="{Binding AudioError}" FontSize="12" Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" MaxWidth="300" VerticalAlignment="Center" />
+          <TextBlock Text="{Binding AudioError}" FontSize="11" Foreground="{DynamicResource ErrorBrush}"
+                     TextWrapping="Wrap" MaxWidth="260" VerticalAlignment="Center" />
         </StackPanel>
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-          <StackPanel Width="220">
-            <TextBlock Text="Output device" Classes="label" />
-            <ComboBox ItemsSource="{Binding AudioDevices}" SelectedItem="{Binding SelectedAudioDevice}" IsEnabled="{Binding IsNotConnected}" HorizontalAlignment="Stretch" />
+          <StackPanel Width="200">
+            <TextBlock Text="Output device" Classes="radio-label" />
+            <ComboBox ItemsSource="{Binding AudioDevices}" SelectedItem="{Binding SelectedAudioDevice}"
+                      IsEnabled="{Binding IsNotConnected}" HorizontalAlignment="Stretch" />
           </StackPanel>
 
-          <StackPanel Width="160">
-            <TextBlock Text="Buffer target" Classes="label" />
+          <StackPanel Width="150">
+            <TextBlock Text="Buffer target" Classes="radio-label" />
             <Slider Minimum="100" Maximum="1000" TickFrequency="50"
                     Value="{Binding BufferMs}" IsEnabled="{Binding IsNotConnected}" />
-            <TextBlock Text="{Binding BufferMs, StringFormat='{}{0} ms'}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{Binding BufferMs, StringFormat='{}{0} ms'}" FontSize="10"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
           </StackPanel>
 
           <StackPanel Width="140">
-            <TextBlock Text="Volume" Classes="label" />
+            <TextBlock Text="Volume" Classes="radio-label" />
             <Slider Minimum="0" Maximum="100" TickFrequency="10"
                     Value="{Binding VolumePercent}" />
-            <TextBlock Text="{Binding VolumePercent, StringFormat='{}{0}%'}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{Binding VolumePercent, StringFormat='{}{0}%'}" FontSize="10"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
           </StackPanel>
         </StackPanel>
       </Grid>
