@@ -60,6 +60,8 @@ public sealed class MainWindowViewModel : ObservableObject
     private bool _vuPeakLit;
     private bool _waveformVisible = true;
     private bool _needleVisible = true;
+    private bool _compassVisible = true;
+    private double _compassBearing;
     private bool _isDarkTheme = true;
 
     private GuestTotals _totals = new();
@@ -567,6 +569,18 @@ public sealed class MainWindowViewModel : ObservableObject
                 SaveSettings();
             }
         }
+    }
+
+    public bool CompassVisible
+    {
+        get => _compassVisible;
+        set => SetProperty(ref _compassVisible, value);
+    }
+
+    public double CompassBearing
+    {
+        get => _compassBearing;
+        set => SetProperty(ref _compassBearing, value);
     }
 
     public short[]? WaveformSamples
@@ -1778,6 +1792,19 @@ public sealed class MainWindowViewModel : ObservableObject
         Band = state.Band ?? "";
         ProtocolVersion = state.ProtocolVersion ?? "";
         OrbId = state.OrbId ?? "";
+
+        // Compass bearing: the server may publish a bearing/direction in the state
+        // extension (receive-only, no license required).
+        if (state.Extension.TryGetValue("bearing", out var bearingText)
+            && double.TryParse(bearingText, out var bearing))
+        {
+            CompassBearing = ((bearing % 360.0) + 360.0) % 360.0;
+        }
+        else if (state.Extension.TryGetValue("direction", out var dirText)
+                 && double.TryParse(dirText, out var dir))
+        {
+            CompassBearing = ((dir % 360.0) + 360.0) % 360.0;
+        }
 
         // The server sends the PWROFF sentinel as FrequencyText when the radio is powered
         // off. Power state is receive-only: a guest cannot power the radio on.

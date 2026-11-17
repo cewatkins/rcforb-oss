@@ -23,4 +23,7 @@ public sealed class RemoteRecordViewModel : ObservableObject
 
     /// <summary>The remote's Orb ID, searchable from the directory.</summary>
     public string OrbId => _record.OrbId;
+
+    /// <summary>The remote's country (from the directory feed).</summary>
+    public string Country => _record.Country;
 }

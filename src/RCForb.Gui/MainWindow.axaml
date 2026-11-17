@@ -166,25 +166,26 @@
                    SelectedItem="{Binding SelectedRemote}">
             <ListBox.ItemTemplate>
               <DataTemplate DataType="local:RemoteRecordViewModel">
-                <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,2,0,2">
-                  <TextBlock Grid.Column="0" Text="{Binding DisplayName}" FontWeight="SemiBold"
-                             TextWrapping="Wrap" VerticalAlignment="Center" />
-                  <TextBlock Grid.Column="1" Text="{Binding Detail}" FontSize="10"
-                             Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap"
-                             VerticalAlignment="Center" Margin="6,0,0,0" />
-                  <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6"
-                              VerticalAlignment="Center" Margin="6,0,0,0">
-                    <TextBlock Text="TX" FontSize="9" FontWeight="SemiBold"
-                               Foreground="{DynamicResource AccentBrush}"
-                               IsVisible="{Binding CanTransmit}" />
-                    <TextBlock Text="{Binding OrbId}" FontSize="9"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               VerticalAlignment="Center" />
-                  </StackPanel>
-                  <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Endpoint}" FontSize="9"
-                             Foreground="{DynamicResource TextSecondaryBrush}"
-                             FontFamily="{DynamicResource MonoFontFamily}" TextWrapping="Wrap" />
-                </Grid>
+                <Grid ColumnDefinitions="120,70,90,Auto,Auto" Margin="0,2,0,2">
+                <TextBlock Grid.Column="0" Text="{Binding DisplayName}" FontWeight="SemiBold"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{Binding Country}" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="{Binding Endpoint}" FontSize="9"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontFamily="{DynamicResource MonoFontFamily}" TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center" />
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4"
+                            VerticalAlignment="Center" Margin="4,0,0,0">
+                  <TextBlock Text="TX" FontSize="9" FontWeight="SemiBold"
+                             Foreground="{DynamicResource AccentBrush}"
+                             IsVisible="{Binding CanTransmit}" />
+                </StackPanel>
+                <TextBlock Grid.Column="4" Text="{Binding OrbId}" FontSize="9"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" Margin="4,0,0,0" />
+              </Grid>
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
@@ -237,6 +238,14 @@
                                         Label="VU" ValueText="{Binding NeedleValueText}"
                                         NeedleBrush="{DynamicResource AccentBrush}"
                                         IsVisible="{Binding NeedleVisible}" />
+            </StackPanel>
+
+            <!-- Bearing compass -->
+            <StackPanel Spacing="4" IsVisible="{Binding CompassVisible}">
+              <TextBlock Text="Bearing" Classes="radio-label" />
+              <Border Width="160" Height="160" HorizontalAlignment="Left">
+                <local:CompassControl Bearing="{Binding CompassBearing}" />
+              </Border>
             </StackPanel>
 
             <!-- Other state -->

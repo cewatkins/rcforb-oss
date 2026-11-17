@@ -51,9 +51,9 @@
           <SolidColorBrush x:Key="ClassicAccentBrush" Color="#000080" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
-          <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="#f2f3f7" />
+          <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="#e8e9ed" />
           <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#ffffff" />
-          <SolidColorBrush x:Key="PanelBorderBrush" Color="#d9dde3" />
+          <SolidColorBrush x:Key="PanelBorderBrush" Color="#adb2bb" />
           <SolidColorBrush x:Key="AccentBrush" Color="#7c3aed" />
           <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1b1e22" />
           <SolidColorBrush x:Key="TextSecondaryBrush" Color="#5c636b" />
