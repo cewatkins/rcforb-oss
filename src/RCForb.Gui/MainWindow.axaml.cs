@@ -57,6 +57,9 @@ public partial class MainWindow : Window
     private void OnSendChatClick(object? sender, RoutedEventArgs e)
         => _ = ViewModel.SendChatAsync();
 
+    private void OnRequestMembershipClick(object? sender, RoutedEventArgs e)
+        => _ = ViewModel.RequestMembershipAsync();
+
     private void OnChatInputKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter)

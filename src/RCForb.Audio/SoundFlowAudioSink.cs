@@ -33,6 +33,18 @@ public sealed class SoundFlowAudioSink : IGuestAudioSink, IDisposable
     private readonly AudioPlaybackDevice _device;
     private readonly PlayoutComponent _component;
     private bool _disposed;
+    private float _volume = 1.0f;
+
+    /// <summary>Playback gain, 0.0 (silent) to 1.0 (unity). Receive-side only.</summary>
+    public float Volume
+    {
+        get => _volume;
+        set
+        {
+            _volume = Math.Clamp(value, 0.0f, 1.0f);
+            _component.Volume = _volume;
+        }
+    }
 
     private SoundFlowAudioSink(
         string? deviceName,
@@ -201,6 +213,14 @@ public sealed class SoundFlowAudioSink : IGuestAudioSink, IDisposable
     private sealed class PlayoutComponent : SoundComponent
     {
         private readonly PlayoutBuffer _buffer;
+        private float _volume = 1.0f;
+
+        /// <summary>Playback gain applied to the receive stream.</summary>
+        public override float Volume
+        {
+            get => _volume;
+            set => _volume = Math.Clamp(value, 0.0f, 1.0f);
+        }
 
         public PlayoutComponent(AudioEngine engine, AudioFormat format, PlayoutBuffer buffer)
             : base(engine, format)
@@ -209,6 +229,16 @@ public sealed class SoundFlowAudioSink : IGuestAudioSink, IDisposable
             Name = "RCForb receive";
         }
 
-        protected override void GenerateAudio(Span<float> buffer, int channels) => _buffer.Read(buffer);
+        protected override void GenerateAudio(Span<float> buffer, int channels)
+        {
+            _buffer.Read(buffer);
+            if (_volume < 1.0f)
+            {
+                for (var i = 0; i < buffer.Length; i++)
+                {
+                    buffer[i] *= _volume;
+                }
+            }
+        }
     }
 }

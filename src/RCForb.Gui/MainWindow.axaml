@@ -91,11 +91,16 @@
                  SelectedItem="{Binding SelectedRemote}">
           <ListBox.ItemTemplate>
             <DataTemplate DataType="local:RemoteRecordViewModel">
-              <StackPanel Spacing="2">
-                <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding Detail}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding Endpoint}" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" FontFamily="{DynamicResource InterFontFamily}" />
-              </StackPanel>
+              <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,2,0,2">
+                <!-- TX capability (informational; transmit requires a license) -->
+                <TextBlock Grid.Column="0" Text="{Binding DisplayName}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{Binding Detail}" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="6,0,0,0" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="6,0,0,0">
+                  <TextBlock Text="TX" FontSize="9" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" IsVisible="{Binding CanTransmit}" />
+                  <TextBlock Text="{Binding OrbId}" FontSize="9" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding Endpoint}" FontSize="9" Foreground="{DynamicResource TextSecondaryBrush}" FontFamily="{DynamicResource InterFontFamily}" TextWrapping="Wrap" />
+              </Grid>
             </DataTemplate>
           </ListBox.ItemTemplate>
         </ListBox>
@@ -236,7 +241,10 @@
       <Grid RowDefinitions="*,Auto,Auto,*">
         <Grid Grid.Row="0" RowDefinitions="Auto,Auto,*">
           <Border Background="{DynamicResource ErrorBrush}" CornerRadius="6" Padding="8,6" Margin="0,0,0,8" IsVisible="{Binding HasRestriction}">
-            <TextBlock Text="{Binding RestrictionBanner}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap" />
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="{Binding RestrictionBanner}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextOnAccentBrush}" TextWrapping="Wrap" VerticalAlignment="Center" />
+              <Button Grid.Column="1" Content="Request" Classes="secondary" Margin="8,0,0,0" Click="OnRequestMembershipClick" ToolTip.Tip="Request club membership / TX access from the remote owner" />
+            </Grid>
           </Border>
           <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
             <TextBlock Text="Chat" Classes="h1" />
@@ -345,6 +353,13 @@
             <Slider Minimum="100" Maximum="1000" TickFrequency="50"
                     Value="{Binding BufferMs}" IsEnabled="{Binding IsNotConnected}" />
             <TextBlock Text="{Binding BufferMs, StringFormat='{}{0} ms'}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
+          </StackPanel>
+
+          <StackPanel Width="140">
+            <TextBlock Text="Volume" Classes="label" />
+            <Slider Minimum="0" Maximum="100" TickFrequency="10"
+                    Value="{Binding VolumePercent}" />
+            <TextBlock Text="{Binding VolumePercent, StringFormat='{}{0}%'}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
           </StackPanel>
         </StackPanel>
       </Grid>

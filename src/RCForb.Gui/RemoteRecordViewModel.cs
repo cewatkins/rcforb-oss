@@ -16,4 +16,11 @@ public sealed class RemoteRecordViewModel : ObservableObject
     public bool IsOnline => _record.Online;
     public bool IsV07 => _record.Transport == TransportGeneration.V07;
     public bool IsPublicListen => _record.IsPublicListen;
+
+    /// <summary>True when the remote advertises transmit capability (informational only —
+    /// transmit itself requires a license and is not implemented here).</summary>
+    public bool CanTransmit => _record.CanTransmit;
+
+    /// <summary>The remote's Orb ID, searchable from the directory.</summary>
+    public string OrbId => _record.OrbId;
 }

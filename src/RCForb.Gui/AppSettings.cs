@@ -13,4 +13,5 @@ public sealed class AppSettings
     public string ManualControlPort { get; set; } = "4525";
     public string ManualAudioPort { get; set; } = "4524";
     public string? SelectedAudioDevice { get; set; }
+    public int VolumePercent { get; set; } = 100;
 }

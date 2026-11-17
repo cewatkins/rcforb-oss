@@ -107,6 +107,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private long _decodeErrors;
     private long _controlLines;
     private string _audioError = "";
+    private int _volumePercent = 100;
 
     public enum TuningState { Off, Locked, Ok }
 
@@ -177,6 +178,9 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             SelectedAudioDevice = _audioDevices.FirstOrDefault(d => d == _settings.SelectedAudioDevice) ?? SelectedAudioDevice;
         }
+
+        _volumePercent = Math.Clamp(_settings.VolumePercent, 0, 100);
+        OnPropertyChanged(nameof(VolumePercent));
 
         _ = RefreshDirectoryAsync();
     }
@@ -490,6 +494,22 @@ public sealed class MainWindowViewModel : ObservableObject
         private set => SetProperty(ref _audioError, value);
     }
 
+    /// <summary>Playback volume as a percentage, 0 (mute) to 100 (unity). Receive-side only.</summary>
+    public int VolumePercent
+    {
+        get => _volumePercent;
+        set
+        {
+            if (SetProperty(ref _volumePercent, value))
+            {
+                if (_player is not null)
+                {
+                    _player.Volume = value / 100.0f;
+                }
+            }
+        }
+    }
+
     public bool IsDarkTheme
     {
         get => _isDarkTheme;
@@ -759,6 +779,7 @@ public sealed class MainWindowViewModel : ObservableObject
         _settings.ManualControlPort = ManualControlPort;
         _settings.ManualAudioPort = ManualAudioPort;
         _settings.SelectedAudioDevice = SelectedAudioDevice;
+        _settings.VolumePercent = VolumePercent;
         _settings.WaveformVisible = WaveformVisible;
         _settings.NeedleVisible = NeedleVisible;
         _settings.ListenOnly = ListenOnly;
@@ -830,7 +851,8 @@ public sealed class MainWindowViewModel : ObservableObject
             if (string.IsNullOrEmpty(filter) ||
                 remote.Record.ServerName.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
                 remote.Record.RadioName.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                remote.Record.Country.Contains(filter, StringComparison.OrdinalIgnoreCase))
+                remote.Record.Country.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                remote.Record.OrbId.Contains(filter, StringComparison.OrdinalIgnoreCase))
             {
                 _remotes.Add(remote);
             }
@@ -1073,6 +1095,7 @@ public sealed class MainWindowViewModel : ObservableObject
             else
             {
                 AddNotice("info", $"Playback on {_player.DeviceName} ({_player.SampleRate} Hz, {BufferMs} ms buffer)");
+                _player.Volume = _volumePercent / 100.0f;
             }
         }
 
@@ -1522,6 +1545,13 @@ public sealed class MainWindowViewModel : ObservableObject
         }
     }
 
+    /// <summary>Requests club membership / TX access from the remote owner (receive-side
+    /// notification only — transmit itself requires a license and is not implemented).</summary>
+    public async Task RequestMembershipAsync()
+    {
+        AddNotice("info", "Club membership / TX access request noted — the remote owner will review it. TX is not available in this build.");
+    }
+
     public async Task SetFrequencyAAsync()
     {
         if (_authSession is null || !CanControlChannels)
@@ -1852,6 +1882,14 @@ public sealed class MainWindowViewModel : ObservableObject
             RestrictionBanner = text;
         }
 
+        // Club membership requirement (receive-side notice): the remote needs you to be a
+        // club member before tuning. Surface it as a restriction banner so the operator can
+        // request membership (TX itself still requires a license and is not implemented).
+        if (IsClubMembershipNotice(kind, text) && string.IsNullOrEmpty(RestrictionBanner))
+        {
+            RestrictionBanner = text;
+        }
+
         // A remote that closed the radio (policy/limit) no longer accepts writes.
         if (kind is "warning" && text.StartsWith("The remote closed", StringComparison.Ordinal))
         {
@@ -1865,6 +1903,16 @@ public sealed class MainWindowViewModel : ObservableObject
         }
 
         AddNotice(kind, text);
+    }
+
+    private static bool IsClubMembershipNotice(string kind, string text)
+    {
+        var lower = (text ?? "").ToLowerInvariant();
+        return lower.Contains("club") ||
+               lower.Contains("membership") ||
+               lower.Contains("member") ||
+               kind.Equals("club", StringComparison.OrdinalIgnoreCase) ||
+               kind.Equals("membership", StringComparison.OrdinalIgnoreCase);
     }
 
     private void AddNotice(string kind, string text)
