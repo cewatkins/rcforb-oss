@@ -297,7 +297,7 @@
 
       <!-- Right: chat and notices -->
       <Border Grid.Column="2" Classes="chassis">
-        <Grid RowDefinitions="Auto,Auto,*">
+        <Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto">
           <!-- Restriction banner -->
           <Border Grid.Row="0" Background="{DynamicResource ErrorBrush}" CornerRadius="6" Padding="8,6"
                   Margin="0,0,0,8" IsVisible="{Binding HasRestriction}">
@@ -356,7 +356,7 @@
           <!-- Notices -->
           <Grid Grid.Row="5" RowDefinitions="Auto,*" Margin="0,8,0,0">
             <TextBlock Text="Notices" Classes="h1" />
-            <ListBox Grid.Row="1" x:Name="NoticesListBox" ItemsSource="{Binding Notices}">
+            <ListBox Grid.Row="1" x:Name="NoticesListBox" ItemsSource="{Binding Notices}" MaxHeight="120">
               <ListBox.ItemTemplate>
                 <DataTemplate DataType="local:NoticeViewModel">
                   <StackPanel>
