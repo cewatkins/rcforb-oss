@@ -854,6 +854,11 @@ public sealed class MainWindowViewModel : ObservableObject
         }
 
         ResetState();
+        // Start every connection from a cleared auth posture: an authorised session that was
+        // disconnected must not look authenticated, and a guest connection must not inherit a
+        // stale "Authorised" pill from a previous authenticated session.
+        SetProperty(ref _authStateText, "");
+        SetProperty(ref _authMessageText, "");
         Status = "connecting";
         TargetName = UseAuth ? $"{AuthUser}@{target.Display}" : target.Display;
         IsConnected = true;
@@ -923,6 +928,10 @@ public sealed class MainWindowViewModel : ObservableObject
         _cts = null;
         _session = null;
         _authSession = null;
+        // Clear the authenticated posture so the "Authorised" pill does not linger after
+        // disconnect, and a subsequent guest connection does not appear authenticated.
+        SetProperty(ref _authStateText, "");
+        SetProperty(ref _authMessageText, "");
         IsConnected = false;
         Status = "idle";
         UpdateTuningState();
@@ -935,6 +944,8 @@ public sealed class MainWindowViewModel : ObservableObject
         OnPropertyChanged(nameof(CanConnectManual));
         OnPropertyChanged(nameof(CanConnectRemote));
         OnPropertyChanged(nameof(IsAuthenticated));
+        OnPropertyChanged(nameof(AuthStateText));
+        OnPropertyChanged(nameof(AuthMessageText));
         OnPropertyChanged(nameof(CanSendChat));
         OnPropertyChanged(nameof(CanControlChannels));
         OnPropertyChanged(nameof(ShowChannelControlsHint));
