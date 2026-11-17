@@ -9,7 +9,7 @@
         Background="{DynamicResource ConsoleBackgroundBrush}"
         FontFamily="{DynamicResource InterFontFamily}">
 
-  <Grid RowDefinitions="Auto,*,Auto,Auto">
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
 
     <!-- ============ Brand bar ============ -->
     <Border Grid.Row="0" Classes="chassis" Padding="14,10,14,10">
