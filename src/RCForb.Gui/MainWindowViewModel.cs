@@ -41,6 +41,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private IGuestAudioSink? _sink;
     private DateTime? _connectedAt;
     private int _lastLinesApplied;
+    private DateTime? _recordingStartedAt;
     private string _authUser = "";
     private string _authPassword = "";
     private string _authStateText = "";
@@ -83,6 +84,8 @@ public sealed class MainWindowViewModel : ObservableObject
     private bool _hasFrequencyB;
     private string _modeDisplay = "";
     private string _band = "";
+    private string _protocolVersion = "";
+    private string _orbId = "";
     private decimal _frequencyAValue = 14_250_000m;
     private decimal _frequencyBValue = 7_185_000m;
     private string _bandText = "";
@@ -349,6 +352,20 @@ public sealed class MainWindowViewModel : ObservableObject
         private set => SetProperty(ref _band, value);
     }
 
+    /// <summary>Protocol version the server advertised (e.g. "rcs").</summary>
+    public string ProtocolVersion
+    {
+        get => _protocolVersion;
+        private set => SetProperty(ref _protocolVersion, value);
+    }
+
+    /// <summary>Orb ID the server advertised.</summary>
+    public string OrbId
+    {
+        get => _orbId;
+        private set => SetProperty(ref _orbId, value);
+    }
+
     public string BandText
     {
         get => _bandText;
@@ -380,6 +397,18 @@ public sealed class MainWindowViewModel : ObservableObject
         get => _radioDisplay;
         private set => SetProperty(ref _radioDisplay, value);
     }
+
+    /// <summary>True when a WAV recording is actively in progress.</summary>
+    public bool IsRecording => RecordEnabled && IsConnected && _recorder is not null;
+
+    /// <summary>How long the current recording has been running.</summary>
+    public TimeSpan RecordingDuration =>
+        _recordingStartedAt is { } started ? DateTime.UtcNow - started : TimeSpan.Zero;
+
+    /// <summary>On-screen recording status, e.g. "REC 00:01:23".</summary>
+    public string RecordingStatus => IsRecording
+        ? $"REC {RecordingDuration:hh\\:mm\\:ss}"
+        : "";
 
     public string SMeterText
     {
@@ -1017,6 +1046,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 }
 
                 _recorder = new WavFileWriter(path);
+                _recordingStartedAt = DateTime.UtcNow;
                 AddNotice("info", $"Recording to {path}");
             }
             catch (Exception ex)
@@ -1088,6 +1118,7 @@ public sealed class MainWindowViewModel : ObservableObject
 
         _sink = null;
         _recorder = null;
+        _recordingStartedAt = null;
         _player = null;
         _waveformSink?.Dispose();
         _waveformSink = null;
@@ -1183,6 +1214,8 @@ public sealed class MainWindowViewModel : ObservableObject
         HasFrequencyB = false;
         ModeDisplay = "";
         Band = "";
+        ProtocolVersion = "";
+        OrbId = "";
         RadioDisplay = "";
         SMeterText = "";
         SMeterPercent = 0;
@@ -1678,6 +1711,8 @@ public sealed class MainWindowViewModel : ObservableObject
         var filter = state.Dropdowns.GetValueOrDefault("Filter", "");
         ModeDisplay = string.IsNullOrEmpty(filter) ? mode : $"{mode} • {filter}";
         Band = state.Band ?? "";
+        ProtocolVersion = state.ProtocolVersion ?? "";
+        OrbId = state.OrbId ?? "";
 
         // The server sends the PWROFF sentinel as FrequencyText when the radio is powered
         // off. Power state is receive-only: a guest cannot power the radio on.
@@ -1904,6 +1939,12 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             PlayoutDepthMs = 0;
             Underruns = 0;
+        }
+
+        if (IsRecording)
+        {
+            OnPropertyChanged(nameof(RecordingDuration));
+            OnPropertyChanged(nameof(RecordingStatus));
         }
 
         // Waveform scope: pull the most recent decoded samples from the tap.
