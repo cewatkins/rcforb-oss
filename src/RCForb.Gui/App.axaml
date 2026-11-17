@@ -36,6 +36,10 @@
           <SolidColorBrush x:Key="ButtonHighlightBrush" Color="#44454c" />
           <SolidColorBrush x:Key="ButtonShadowBrush" Color="#16171a" />
 
+          <!-- Color resources for GradientStop.Color (expects Color, not Brush) -->
+          <Color x:Key="ButtonHighlightColor">#44454c</Color>
+          <Color x:Key="ButtonFaceColor">#2c2d33</Color>
+
           <!-- Classic mode: original RCForb .exe look (gray Windows client) -->
           <SolidColorBrush x:Key="ClassicPanelBrush" Color="#c0c0c0" />
           <SolidColorBrush x:Key="ClassicPanelDarkBrush" Color="#808080" />
@@ -72,6 +76,10 @@
           <SolidColorBrush x:Key="ButtonFacePressedBrush" Color="#c4c6cd" />
           <SolidColorBrush x:Key="ButtonHighlightBrush" Color="#ffffff" />
           <SolidColorBrush x:Key="ButtonShadowBrush" Color="#a8abb2" />
+
+          <!-- Color resources for GradientStop.Color (expects Color, not Brush) -->
+          <Color x:Key="ButtonHighlightColor">#ffffff</Color>
+          <Color x:Key="ButtonFaceColor">#d9dde3</Color>
 
           <!-- Classic mode: original RCForb .exe look (gray Windows client) -->
           <SolidColorBrush x:Key="ClassicPanelBrush" Color="#c0c0c0" />
@@ -133,8 +141,8 @@
     <Style Selector="Button.radio">
       <Setter Property="Background">
         <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-          <GradientStop Offset="0" Color="{DynamicResource ButtonHighlightBrush}" />
-          <GradientStop Offset="1" Color="{DynamicResource ButtonFaceBrush}" />
+          <GradientStop Offset="0" Color="{DynamicResource ButtonHighlightColor}" />
+          <GradientStop Offset="1" Color="{DynamicResource ButtonFaceColor}" />
         </LinearGradientBrush>
       </Setter>
       <Setter Property="BorderBrush" Value="{DynamicResource ButtonShadowBrush}" />
