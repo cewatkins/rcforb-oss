@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="using:RCForb.Gui"
         x:Class="RCForb.Gui.MainWindow"
-        Title="rcforb-gui — listen only"
+        Title="{Binding WindowTitle}"
         Width="1280" Height="800"
         MinWidth="1024" MinHeight="700"
         WindowStartupLocation="CenterScreen"

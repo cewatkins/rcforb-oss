@@ -111,6 +111,18 @@ public sealed class MainWindowViewModel : ObservableObject
     private string _tuningStatusText = "";
     private IBrush? _tuningStatusBrush;
 
+    /// <summary>Assembly version, shown in the window title so the user can tell
+    /// which build they are running.</summary>
+    private static readonly Lazy<string> _version = new(() =>
+    {
+        var name = typeof(MainWindowViewModel).Assembly.GetName();
+        return name.Version is { } v ? v.ToString() : "0.0.0";
+    });
+
+    public string Version => _version.Value;
+
+    public string WindowTitle => $"rcforb-gui — listen only v{Version}";
+
     public string TuningStatusText
     {
         get => _tuningStatusText;
