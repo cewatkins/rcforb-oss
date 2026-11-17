@@ -35,6 +35,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private GuestSession? _session;
     private AuthenticatedSession? _authSession;
     private bool _radioClosed;
+    private bool _radioPoweredOff;
     private SoundFlowAudioSink? _player;
     private WavFileWriter? _recorder;
     private IGuestAudioSink? _sink;
@@ -121,6 +122,21 @@ public sealed class MainWindowViewModel : ObservableObject
         get => _tuningStatusBrush;
         private set => SetProperty(ref _tuningStatusBrush, value);
     }
+
+    /// <summary>True when the server reports the radio as powered off (the PWROFF sentinel).</summary>
+    public bool RadioPoweredOff
+    {
+        get => _radioPoweredOff;
+        private set => SetProperty(ref _radioPoweredOff, value);
+    }
+
+    /// <summary>Human-readable power state for a UI badge.</summary>
+    public string PowerStateText => RadioPoweredOff ? "POWER OFF" : "POWER ON";
+
+    /// <summary>Badge colour: red when off, green when on.</summary>
+    public IBrush? PowerStateBrush => RadioPoweredOff
+        ? ThemeBrush("ErrorBrush")
+        : ThemeBrush("SuccessBrush");
 
     public MainWindowViewModel()
     {
@@ -589,7 +605,8 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public bool CanControlChannels => _authSession is not null
         && _authSession.AuthState != AuthState.Refused
-        && !_radioClosed;
+        && !_radioClosed
+        && !_radioPoweredOff;
 
     public bool ShowChannelControlsHint => _authSession is null;
 
@@ -1088,6 +1105,11 @@ public sealed class MainWindowViewModel : ObservableObject
             level = TuningState.Locked;
             text = "TUNING LOCKED — radio closed by remote";
         }
+        else if (_radioPoweredOff)
+        {
+            level = TuningState.Locked;
+            text = "TUNING LOCKED — radio powered off";
+        }
         else if (CanControlChannels)
         {
             level = TuningState.Ok;
@@ -1171,6 +1193,7 @@ public sealed class MainWindowViewModel : ObservableObject
         _filterOptions.Clear();
         _connectedUsers.Clear();
         _radioClosed = false;
+        _radioPoweredOff = false;
         AuthStateText = "Pending";
         AuthMessageText = "";
         RestrictionBanner = "";
@@ -1643,6 +1666,27 @@ public sealed class MainWindowViewModel : ObservableObject
         var filter = state.Dropdowns.GetValueOrDefault("Filter", "");
         ModeDisplay = string.IsNullOrEmpty(filter) ? mode : $"{mode} • {filter}";
         Band = state.Band ?? "";
+
+        // The server sends the PWROFF sentinel as FrequencyText when the radio is powered
+        // off. Power state is receive-only: a guest cannot power the radio on.
+        var wasOff = _radioPoweredOff;
+        var poweredOff = string.Equals(state.FrequencyText, "PWROFF", StringComparison.OrdinalIgnoreCase);
+        if (SetProperty(ref _radioPoweredOff, poweredOff))
+        {
+            OnPropertyChanged(nameof(PowerStateText));
+            OnPropertyChanged(nameof(PowerStateBrush));
+            OnPropertyChanged(nameof(CanControlChannels));
+            OnPropertyChanged(nameof(CanSetFrequencyB));
+            UpdateTuningState();
+            if (poweredOff && !wasOff)
+            {
+                AddNotice("warning", "Radio is powered off (PWROFF). No audio or tuning until the remote operator powers it on.");
+            }
+            else if (!poweredOff && wasOff)
+            {
+                AddNotice("info", "Radio is now powered on.");
+            }
+        }
 
         if (state.Lists.TryGetValue("Mode", out var modeList))
         {
